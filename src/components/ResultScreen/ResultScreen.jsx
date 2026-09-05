@@ -1,0 +1,127 @@
+import React from 'react'
+import './ResultScreen.css'
+import { useLanguage } from '../../i18n/LanguageContext'
+import BilingualText from '../BilingualText/BilingualText'
+
+const SPECIALIST_ICONS = {
+  'Cardiologist':'🫀','Neurologist':'🧠','General Physician':'🩺',
+  'Gastroenterologist':'🔬','Orthopedic Surgeon':'🦴','Dermatologist':'💊',
+  'Ophthalmologist':'👁️','Urologist':'🧪','Psychiatrist':'🧘','Endocrinologist':'⚗️',
+}
+
+const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
+  const { t, en } = useLanguage()
+
+  const SEVERITY_CONFIG = {
+    High:     { color:'#c62828', bg:'#ffebee', border:'#ef9a9a', icon:'🚨', tKey:'severityHigh' },
+    Moderate: { color:'#e65100', bg:'#fff3e0', border:'#ffcc80', icon:'⚠️', tKey:'severityMod'  },
+    Low:      { color:'#2e7d32', bg:'#e8f5e9', border:'#a5d6a7', icon:'✅', tKey:'severityLow'  },
+  }
+
+  const sev = SEVERITY_CONFIG[result.severity] || SEVERITY_CONFIG.Low
+  const specialistIcon = SPECIALIST_ICONS[result.recommendedSpecialist] || '👨‍⚕️'
+
+  return (
+    <div className="result-screen anim-in">
+      <div className="result-screen__inner">
+
+        {/* Header */}
+        <div className="result-header">
+          <div className="result-header__check" aria-hidden="true">✓</div>
+          <div>
+            <h2 className="result-header__title">
+              <BilingualText tKey="analysisComplete" as="span" size="md" />
+            </h2>
+            <p className="result-header__time">
+              {new Date(result.analyzedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}
+              &nbsp;·&nbsp;{en('confidence')}: <strong>{result.confidence}%</strong>
+            </p>
+          </div>
+        </div>
+
+        {/* Emergency */}
+        {result.emergencyFlag && (
+          <div className="result-emergency" role="alert" aria-live="assertive">
+            <span className="result-emergency__icon" aria-hidden="true">🚨</span>
+            <div>
+              <p className="result-emergency__title">
+                <BilingualText tKey="emergency" as="span" size="md" />
+              </p>
+              <p className="result-emergency__text">{result.urgencyNote}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Severity */}
+        <div className="result-severity"
+          style={{ background:sev.bg, borderColor:sev.border, color:sev.color }}
+          aria-label={t(sev.tKey)}>
+          <span className="result-severity__icon" aria-hidden="true">{sev.icon}</span>
+          <BilingualText tKey={sev.tKey} as="span" className="result-severity__label" size="sm" />
+        </div>
+
+        {/* Diseases */}
+        <div className="result-section">
+          <h3 className="result-section__title">
+            <span aria-hidden="true">🦠</span>{' '}
+            <BilingualText tKey="possibleConditions" as="span" size="sm" />
+          </h3>
+          <ul className="result-disease-list" aria-label={en('possibleConditions')}>
+            {result.possibleDiseases.map((d, i) => (
+              <li key={i} className="result-disease-item">
+                <span className="result-disease-item__dot" aria-hidden="true"/>
+                {/* Disease names are in English – no translation */}
+                {d}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Specialist – kept in English (Part 5) */}
+        <div className="result-section">
+          <h3 className="result-section__title">
+            <span aria-hidden="true">👨‍⚕️</span>{' '}
+            <BilingualText tKey="seeThisDoctor" as="span" size="sm" />
+          </h3>
+          <div className="result-specialist">
+            <span className="result-specialist__icon" aria-hidden="true">{specialistIcon}</span>
+            {/* Specialization stays in English */}
+            <span className="result-specialist__name">{result.recommendedSpecialist}</span>
+          </div>
+        </div>
+
+        {/* Urgency note (non-emergency) */}
+        {result.urgencyNote && !result.emergencyFlag && (
+          <div className="result-note" role="note">
+            <span aria-hidden="true">ℹ️</span>
+            <p>{result.urgencyNote}</p>
+          </div>
+        )}
+
+        <p className="result-disclaimer">
+          <BilingualText tKey="aiDisclaimer" as="span" size="sm" />
+        </p>
+
+        {/* Actions */}
+        <div className="result-actions">
+          <button id="find-doctor-btn" className="result-btn result-btn--primary" onClick={onFindDoctors}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <BilingualText tKey="findDoctor" as="span" size="sm" />
+          </button>
+          <button id="speak-again-btn" className="result-btn result-btn--secondary" onClick={onSpeakAgain}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.68"/>
+            </svg>
+            <BilingualText tKey="speakAgain" as="span" size="sm" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ResultScreen

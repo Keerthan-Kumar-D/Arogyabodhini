@@ -1,0 +1,393 @@
+.doclist-screen {
+  min-height: calc(100vh - 68px);
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ── */
+.doclist-topbar {
+  background: #ffffff;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.doclist-back-btn,
+.doclist-home-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid #90a4ae;
+  background: #ffffff;
+  color: #37474f;
+  transition: all 0.15s ease;
+  min-height: 42px;
+}
+
+.doclist-back-btn:hover,
+.doclist-home-btn:hover {
+  background: #eceff1;
+  border-color: #607d8b;
+}
+
+.doclist-topbar__info {
+  flex: 1;
+  text-align: center;
+  font-size: 1rem;
+  color: #546e7a;
+}
+
+.doclist-topbar__info strong {
+  color: #1565c0;
+  font-weight: 800;
+}
+
+/* ── Inner content ── */
+.doclist-inner {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.doclist-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #1a2332;
+  margin-bottom: 6px;
+}
+
+.doclist-hint {
+  font-size: 1rem;
+  color: #546e7a;
+  margin-bottom: 20px;
+}
+
+.doclist-hint strong {
+  color: #2e7d32;
+  font-weight: 800;
+}
+
+/* ── Doctor grid ── */
+.doclist-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Doctor card ── */
+.doc-card {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  position: relative;
+  transition: box-shadow 0.15s ease;
+}
+
+.doc-card:hover {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+}
+
+.doc-card--highlight {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+}
+
+/* Language match badge */
+.doc-card__lang-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #e8f5e9;
+  border: 1.5px solid #4caf50;
+  color: #2e7d32;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+/* ── Header ── */
+.doc-card__header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-right: 130px; /* space for badge */
+}
+
+.doc-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.doc-card__online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  background: #4caf50;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+}
+
+.doc-card__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.doc-card__name {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #1a2332;
+  margin-bottom: 2px;
+}
+
+.doc-card__spec {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1565c0;
+  margin-bottom: 2px;
+}
+
+.doc-card__hosp {
+  font-size: 0.85rem;
+  color: #78909c;
+  margin-bottom: 6px;
+}
+
+/* Stars */
+.doc-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.doc-stars__val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f9a825;
+  margin-left: 4px;
+}
+
+.doc-stars__cnt {
+  font-size: 0.8rem;
+  color: #90a4ae;
+  margin-left: 2px;
+}
+
+/* Availability badge */
+.doc-card__avail {
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: fit-content;
+  align-self: flex-start;
+}
+
+.doc-card__avail--now {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1.5px solid #a5d6a7;
+}
+
+.doc-card__avail--soon {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1.5px solid #ffcc80;
+}
+
+.doc-card__avail-dot {
+  width: 8px;
+  height: 8px;
+  background: #4caf50;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.2s ease infinite;
+}
+
+/* ── Info row ── */
+.doc-card__info-row {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.doc-card__info-cell {
+  flex: 1;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1.5px solid #e0e0e0;
+}
+
+.doc-card__info-cell:last-child {
+  border-right: none;
+}
+
+.doc-card__info-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #90a4ae;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.doc-card__info-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a2332;
+}
+
+.doc-card__info-val--fee {
+  color: #2e7d32;
+  font-size: 1.05rem;
+}
+
+/* ── Languages ── */
+.doc-card__langs {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.doc-card__langs-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #546e7a;
+}
+
+.doc-card__lang-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.doc-card__lang-chip {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: #f5f5f5;
+  border: 1.5px solid #e0e0e0;
+  color: #546e7a;
+}
+
+.doc-card__lang-chip--match {
+  background: #e8f0fe;
+  border-color: #9fa8da;
+  color: #1565c0;
+  font-weight: 800;
+}
+
+/* ── Action buttons ── */
+.doc-card__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.doc-action-btn {
+  flex: 1;
+  min-height: 52px;
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.doc-action-btn--book {
+  background: #1565c0;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(21,101,192,0.3);
+}
+
+.doc-action-btn--book:hover {
+  background: #0d47a1;
+  transform: translateY(-1px);
+}
+
+.doc-action-btn--booked {
+  background: #2e7d32 !important;
+  box-shadow: 0 3px 10px rgba(46,125,50,0.3) !important;
+}
+
+.doc-action-btn--video {
+  background: #ffffff;
+  color: #1565c0;
+  border: 2.5px solid #1565c0;
+  flex: 0 0 auto;
+  padding: 0 18px;
+}
+
+.doc-action-btn--video:hover {
+  background: #e8f0fe;
+}
+
+.doc-action-btn--profile {
+  background: #f5f7fa;
+  color: #1565c0;
+  border: 2px solid #9fa8da;
+  flex: 0 0 auto;
+  padding: 0 16px;
+}
+
+.doc-action-btn--profile:hover {
+  background: #e8f0fe;
+  border-color: #1565c0;
+}
+
+/* ── Empty state ── */
+.doclist-empty {
+  background: #fff3e0;
+  border: 1.5px solid #ffcc80;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #e65100;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .doc-card__header     { padding-right: 0; flex-wrap: wrap; }
+  .doc-card__lang-badge { position: static; order: -1; align-self: flex-start; }
+  .doc-card__avail      { order: 3; }
+  .doc-card__info-row   { flex-wrap: wrap; }
+  .doc-card__info-cell  { min-width: 45%; border-right: 1.5px solid #e0e0e0; }
+  .doc-action-btn       { font-size: 0.88rem; }
+  .doclist-topbar__info { display: none; }
+}

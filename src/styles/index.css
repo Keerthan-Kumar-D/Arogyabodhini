@@ -1,0 +1,72 @@
+/* =============================================
+   Arogyabodhini — Simple Healthcare Design System
+   Government Kiosk / Hospital Registration Style
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ─── RESET ──────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Noto Sans', Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #1a2332;
+  background: #f5f7fa;
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+a        { text-decoration: none; color: inherit; }
+button   { font-family: inherit; cursor: pointer; border: none; outline: none; background: none; }
+input, textarea, select { font-family: inherit; outline: none; }
+ul, ol   { list-style: none; }
+
+/* ─── ACCESSIBILITY ──────────────────────────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f0f0f0; }
+::-webkit-scrollbar-thumb { background: #1565c0; border-radius: 99px; }
+
+/* ─── ANIMATIONS ─────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(21, 101, 192, 0.45); }
+  60%       { box-shadow: 0 0 0 18px rgba(21, 101, 192, 0); }
+}
+@keyframes ripple {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.35); }
+  50%       { transform: scaleY(1); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.anim-in { animation: fadeIn 0.4s ease both; }

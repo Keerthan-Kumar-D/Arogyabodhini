@@ -1,0 +1,359 @@
+.appt-screen {
+  min-height: calc(100vh - 68px);
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Top bar ─── */
+.appt-topbar {
+  background: #ffffff;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.appt-back-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 2px solid #90a4ae;
+  background: #ffffff;
+  color: #37474f;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.appt-back-btn:hover { background: #eceff1; border-color: #607d8b; }
+
+.appt-topbar__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a2332;
+}
+
+/* ─── Inner ─── */
+.appt-inner {
+  max-width: 540px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Doctor summary card ─── */
+.appt-doc-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  position: relative;
+}
+
+.appt-doc-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appt-doc-info {
+  flex: 1;
+}
+
+.appt-doc-info h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a2332;
+  margin-bottom: 2px;
+}
+
+.appt-doc-info p {
+  font-size: 0.85rem;
+  color: #78909c;
+}
+
+.appt-doc-fee {
+  color: #2e7d32 !important;
+  font-weight: 600 !important;
+}
+
+.appt-mode-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.appt-mode-badge--video {
+  background: #e8f0fe;
+  color: #1565c0;
+  border: 1.5px solid #9fa8da;
+}
+
+.appt-mode-badge--visit {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1.5px solid #a5d6a7;
+}
+
+/* ─── Form ─── */
+.appt-form { display: flex; flex-direction: column; gap: 18px; }
+
+.appt-field { display: flex; flex-direction: column; gap: 8px; }
+
+.appt-field-row { display: flex; gap: 12px; }
+.appt-field-row > .appt-field { flex: 1; }
+
+.appt-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #37474f;
+}
+
+.appt-required { color: #c62828; }
+
+.appt-input {
+  padding: 13px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a2332;
+  background: #ffffff;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.appt-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%2390a4ae'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+.appt-input:focus {
+  border-color: #1565c0;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+}
+
+/* ─── Slots ─── */
+.appt-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.appt-slot {
+  padding: 10px 18px;
+  border-radius: 9px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  background: #f5f7fa;
+  border: 2px solid #e0e0e0;
+  color: #37474f;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.appt-slot:hover {
+  border-color: #1565c0;
+  color: #1565c0;
+  background: #e8f0fe;
+}
+
+.appt-slot--selected {
+  background: #1565c0;
+  border-color: #1565c0;
+  color: #ffffff;
+}
+
+/* ─── Avail note ─── */
+.appt-avail-note {
+  font-size: 0.88rem;
+  color: #78909c;
+  padding: 12px 16px;
+  background: #fff3e0;
+  border-radius: 8px;
+  border: 1.5px solid #ffcc80;
+}
+
+/* ─── Confirm button ─── */
+.appt-confirm-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 12px;
+  background: #1565c0;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 14px rgba(21,101,192,0.35);
+  font-family: inherit;
+}
+
+.appt-confirm-btn:hover:not(:disabled) {
+  background: #0d47a1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(21,101,192,0.45);
+}
+
+.appt-confirm-btn:disabled {
+  background: #b0bec5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ─── Success state ─── */
+.appt-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.appt-success__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  border: 3px solid #4caf50;
+  color: #2e7d32;
+  font-size: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.appt-success__title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #2e7d32;
+}
+
+.appt-success__card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.appt-success__card p {
+  font-size: 0.95rem;
+  color: #37474f;
+}
+
+.appt-success__card strong {
+  color: #1a2332;
+  font-weight: 700;
+}
+
+.appt-success__note {
+  font-size: 0.88rem;
+  color: #78909c;
+  max-width: 360px;
+}
+
+.appt-home-btn {
+  padding: 14px 32px;
+  border-radius: 12px;
+  background: #1565c0;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.appt-home-btn:hover {
+  background: #0d47a1;
+  transform: translateY(-1px);
+}
+
+.appt-success__video-note {
+  margin-top: 4px;
+  padding: 8px 12px;
+  background: #e8f0fe;
+  border-radius: 8px;
+  color: #1565c0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #9fa8da;
+}
+
+.appt-success__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.appt-join-call-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: #2e7d32;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  box-shadow: 0 4px 14px rgba(46,125,50,0.35);
+}
+
+.appt-join-call-btn:hover { background: #1b5e20; transform: translateY(-1px); }
+
+.appt-home-btn-secondary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff;
+  color: #546e7a;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.appt-home-btn-secondary:hover { background: #f5f7fa; }

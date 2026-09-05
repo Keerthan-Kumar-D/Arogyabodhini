@@ -1,0 +1,314 @@
+/* ── HomeScreen ─────────────────────────────── */
+.home-screen {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+/* ── Language bar ── */
+.home-lang-bar {
+  background: #e8f0fe;
+  border-bottom: 2px solid #c5cae9;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.home-lang-bar__label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a237e;
+  white-space: nowrap;
+}
+
+.home-lang-bar__tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.home-lang-tab {
+  padding: 10px 20px;
+  border: 2px solid #9fa8da;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #283593;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.home-lang-tab:hover {
+  background: #e8eaf6;
+  border-color: #3f51b5;
+}
+
+.home-lang-tab--active {
+  background: #1565c0;
+  border-color: #0d47a1;
+  color: #ffffff;
+}
+
+/* ── Content area ── */
+.home-content {
+  flex: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Step block ── */
+.home-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 0;
+}
+
+.home-step__number {
+  width: 36px;
+  height: 36px;
+  background: #1565c0;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.home-step__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a2332;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Bilingual label: English line (smaller, muted) */
+.home-step__en {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #78909c;
+}
+
+/* Native language line (large, prominent) */
+.home-step__native {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #1a2332;
+}
+
+.home-step__hint {
+  font-size: 1rem;
+  color: #546e7a;
+  margin-bottom: 24px;
+}
+
+/* ── Mic button ── */
+.home-mic-btn {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #1565c0;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #0d47a1;
+  box-shadow: 0 6px 24px rgba(21,101,192,0.35);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  margin-bottom: 14px;
+  overflow: visible;
+}
+
+.home-mic-btn:hover {
+  background: #0d47a1;
+  transform: scale(1.04);
+  box-shadow: 0 10px 32px rgba(21,101,192,0.45);
+}
+
+.home-mic-btn:active {
+  transform: scale(0.97);
+}
+
+/* Ripple on invitation pulse */
+.home-mic-btn__ripple {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid rgba(21,101,192,0.4);
+  pointer-events: none;
+}
+
+.home-mic-btn.pulse-invite {
+  animation: micPulse 0.7s ease;
+}
+
+@keyframes micPulse {
+  0%   { box-shadow: 0 6px 24px rgba(21,101,192,0.35); }
+  50%  { box-shadow: 0 0 0 20px rgba(21,101,192,0.0), 0 6px 24px rgba(21,101,192,0.5); }
+  100% { box-shadow: 0 6px 24px rgba(21,101,192,0.35); }
+}
+
+.home-mic-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1565c0;
+  letter-spacing: 0.01em;
+}
+
+/* ── Divider ── */
+.home-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 4px 0;
+}
+
+.home-divider__line {
+  flex: 1;
+  height: 2px;
+  background: #e0e0e0;
+}
+
+.home-divider__text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #9e9e9e;
+  white-space: nowrap;
+}
+
+/* ── Text area ── */
+.home-step--text {
+  align-items: stretch;
+  text-align: left;
+}
+
+.home-step--text .home-step__title {
+  text-align: center;
+}
+
+.home-textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 16px;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: #1a2332;
+  background: #ffffff;
+  border: 2.5px solid #90a4ae;
+  border-radius: 10px;
+  resize: vertical;
+  transition: border-color 0.15s ease;
+  margin-bottom: 16px;
+}
+
+.home-textarea:focus {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+}
+
+.home-textarea::placeholder {
+  color: #90a4ae;
+}
+
+.home-textarea:disabled {
+  background: #f5f5f5;
+  opacity: 0.7;
+}
+
+/* ── Error box ── */
+.home-error {
+  background: #fff3e0;
+  border: 2px solid #ff6f00;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #bf360c;
+  margin-bottom: 16px;
+}
+
+/* ── Analyze button ── */
+.home-analyze-btn {
+  width: 100%;
+  min-height: 60px;
+  background: #2e7d32;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(46,125,50,0.35);
+}
+
+.home-analyze-btn:hover:not(:disabled) {
+  background: #1b5e20;
+  box-shadow: 0 6px 20px rgba(46,125,50,0.45);
+  transform: translateY(-1px);
+}
+
+.home-analyze-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.home-analyze-btn:disabled {
+  background: #bdbdbd;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.home-analyze-btn__spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255,255,255,0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Disclaimer ── */
+.home-disclaimer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #78909c;
+  padding: 16px 24px 24px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: auto;
+  background: #fafafa;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .home-step__title  { font-size: 1.25rem; }
+  .home-mic-btn      { width: 120px; height: 120px; }
+  .home-analyze-btn  { font-size: 1.05rem; min-height: 56px; }
+  .home-lang-bar     { padding: 10px 14px; gap: 10px; }
+  .home-lang-tab     { padding: 8px 14px; font-size: 0.9rem; }
+  .home-content      { padding: 20px 16px; }
+}

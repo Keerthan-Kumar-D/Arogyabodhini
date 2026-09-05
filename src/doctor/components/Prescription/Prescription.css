@@ -1,0 +1,74 @@
+.rx-root { display:flex; flex-direction:column; gap:14px; }
+.rx-root--empty { background:#fff; border-radius:12px; padding:40px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; color:#78909c; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.rx-empty-icon { font-size:2.5rem; }
+
+/* Paper */
+.rx-paper { background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.07); font-size:0.88rem; }
+
+/* Header */
+.rx-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.rx-header__left { display:flex; align-items:center; gap:12px; }
+.rx-logo svg { display:block; }
+.rx-hospital { font-size:1.05rem; font-weight:900; color:#1a2332; }
+.rx-tagline  { font-size:0.72rem; color:#78909c; }
+.rx-header__right { text-align:right; }
+.rx-date { font-size:0.82rem; color:#546e7a; }
+
+.rx-divider { border:none; border-top:1.5px solid #e0e0e0; margin:10px 0; }
+
+/* Doctor */
+.rx-doctor-section { margin-bottom:4px; }
+.rx-doctor-name { font-size:1rem; font-weight:800; color:#1565c0; }
+.rx-doctor-spec { font-size:0.85rem; color:#546e7a; }
+.rx-doctor-reg  { font-size:0.78rem; color:#90a4ae; }
+
+/* Patient */
+.rx-patient-row { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:4px; }
+.rx-patient-row > div { display:flex; flex-direction:column; gap:2px; }
+.rx-patient-row label { font-size:0.7rem; font-weight:700; color:#90a4ae; text-transform:uppercase; }
+.rx-patient-row span  { font-size:0.9rem; font-weight:600; color:#1a2332; }
+
+/* Diagnosis */
+.rx-diagnosis { margin-bottom:12px; }
+.rx-diagnosis label { font-size:0.72rem; font-weight:700; color:#90a4ae; text-transform:uppercase; display:block; margin-bottom:4px; }
+.rx-diagnosis p { font-size:0.92rem; font-weight:700; color:#1a2332; }
+
+/* Medicines */
+.rx-medicines { position:relative; margin-bottom:14px; }
+.rx-symbol { position:absolute; top:0; left:0; font-size:1.6rem; font-weight:900; color:#1565c0; font-family:serif; }
+.rx-table { width:100%; border-collapse:collapse; margin-left:28px; font-size:0.82rem; }
+.rx-table th { background:#f5f7fa; padding:7px 10px; text-align:left; font-weight:700; color:#546e7a; border-bottom:2px solid #e0e0e0; }
+.rx-table td { padding:7px 10px; color:#1a2332; border-bottom:1px solid #f0f0f0; }
+.rx-table tr:last-child td { border-bottom:none; }
+
+/* Instructions */
+.rx-instructions-section { margin-bottom:10px; }
+.rx-instructions-section label, .rx-advice label { font-size:0.72rem; font-weight:700; color:#90a4ae; text-transform:uppercase; display:block; margin-bottom:4px; }
+.rx-instructions-section p, .rx-advice p { font-size:0.88rem; color:#37474f; }
+.rx-instructions-input { width:100%; padding:8px 12px; border:1.5px solid #e0e0e0; border-radius:8px; font-size:0.88rem; font-family:inherit; resize:vertical; }
+.rx-advice { margin-bottom:8px; }
+
+/* Signature */
+.rx-signature { display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; padding-top:12px; border-top:1.5px dashed #e0e0e0; }
+.rx-sig-label { font-size:0.7rem; color:#90a4ae; margin-bottom:20px; }
+.rx-sig-line  { width:140px; border-bottom:1.5px solid #1a2332; margin-bottom:6px; }
+.rx-sig-name  { font-size:0.88rem; font-weight:800; color:#1a2332; }
+.rx-sig-spec  { font-size:0.75rem; color:#78909c; }
+
+.rx-seal__circle { width:70px; height:70px; border-radius:50%; border:2.5px solid #1565c0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#1565c0; font-size:0.6rem; font-weight:800; letter-spacing:0.05em; opacity:0.4; }
+
+.rx-disclaimer { margin-top:14px; font-size:0.7rem; color:#90a4ae; text-align:center; }
+
+/* Actions */
+.rx-actions { display:flex; gap:10px; }
+.rx-save-btn  { flex:1; padding:11px; border-radius:10px; background:#1565c0; color:#fff; font-size:0.9rem; font-weight:700; border:none; cursor:pointer; font-family:inherit; transition:all .15s; }
+.rx-save-btn:hover { background:#0d47a1; }
+.rx-print-btn { flex:1; padding:11px; border-radius:10px; background:#fff; color:#1565c0; font-size:0.9rem; font-weight:700; border:2px solid #1565c0; cursor:pointer; font-family:inherit; transition:all .15s; }
+.rx-print-btn:hover { background:#e8f0fe; }
+.rx-saved-note { font-size:0.82rem; color:#2e7d32; text-align:center; }
+
+@media print {
+  body > *:not(#rx-printable) { display:none !important; }
+  .rx-actions, .rx-saved-note { display:none; }
+  .rx-paper { box-shadow:none; border:none; }
+}

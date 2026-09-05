@@ -1,0 +1,168 @@
+.vcall-root {
+  background: #1a1a2e;
+  border-radius: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+/* Remote area */
+.vcall-remote {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d1b2a 0%, #1a2744 100%);
+  border-radius: 14px 14px 0 0;
+  position: relative;
+}
+
+.vcall-remote__avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vcall-remote__avatar > span {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #1565c0;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vcall-remote__name   { font-size: 1rem; font-weight: 700; color: #fff; }
+.vcall-remote__status { font-size: 0.82rem; color: #a5d6a7; }
+
+.vcall-idle, .vcall-connecting, .vcall-waiting, .vcall-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.92rem;
+}
+
+.vcall-idle__icon { font-size: 2.5rem; }
+
+.vcall-join-btn {
+  padding: 10px 24px;
+  border-radius: 9px;
+  background: #1565c0;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.vcall-join-btn:hover { background: #0d47a1; }
+
+.vcall-spinner, .vcall-waiting__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Duration */
+.vcall-duration {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.55);
+  color: #ef5350;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+/* Local video */
+.vcall-local {
+  position: absolute;
+  bottom: 60px;
+  right: 12px;
+  width: 90px;
+  height: 70px;
+  background: #263238;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.vcall-local__face {
+  font-size: 1.4rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #37474f;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.vcall-local__label { font-size: 0.62rem; color: rgba(255,255,255,0.6); }
+
+/* Controls */
+.vcall-controls {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  background: #0d1b2a;
+  width: 100%;
+  justify-content: center;
+}
+
+.vcall-ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.vcall-ctrl-btn span { font-size: 0.7rem; font-weight: 600; }
+.vcall-ctrl-btn:hover { background: rgba(255,255,255,0.18); }
+.vcall-ctrl-btn--off  { background: rgba(239,83,80,0.25); }
+.vcall-ctrl-btn--end  { background: #ef5350; }
+.vcall-ctrl-btn--end:hover { background: #c62828; }
+
+/* Note */
+.vcall-note {
+  padding: 6px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  background: #0d1b2a;
+  width: 100%;
+  border-radius: 0 0 14px 14px;
+}
