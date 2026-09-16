@@ -17,7 +17,7 @@ const ConsultationRoom = ({ consultation, onBack }) => {
   const [completed,  setCompleted]    = useState(consultation.status === 'completed')
 
   if (!consultation) return null
-  const { aiResult, patientName, patientAge, patientGender, patientLang, symptoms, slot } = consultation
+  const { aiResult, patientName, patientAge, patientGender, patientLang, symptoms, slot, consultationType } = consultation
   const sev = aiResult?.severity || 'Low'
 
   const handleSaveNotes = async (notes) => {
@@ -114,7 +114,7 @@ const ConsultationRoom = ({ consultation, onBack }) => {
               <div><label>Age</label><span>{patientAge || '–'} yrs</span></div>
               <div><label>Gender</label><span>{patientGender || '–'}</span></div>
               <div><label>Language</label><span>{patientLang}</span></div>
-              <div><label>Slot</label><span>{slot}</span></div>
+              {consultationType !== 'video' && <div><label>Slot</label><span>{slot || '–'}</span></div>}
             </div>
           </div>
 

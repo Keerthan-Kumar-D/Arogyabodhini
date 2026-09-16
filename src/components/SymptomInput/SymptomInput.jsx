@@ -117,6 +117,7 @@ const SymptomInput = () => {
       const data = await analyzeAPI(combined, lang.code)
       setResult({
         possibleDiseases:      data.possibleDiseases,
+        matchedSymptoms:       data.matchedSymptoms || [],
         recommendedSpecialist: data.recommendedSpecialist,
         severity:              data.severity,
         urgencyNote:           data.urgencyNote,

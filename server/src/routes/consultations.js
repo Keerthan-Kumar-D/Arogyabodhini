@@ -27,7 +27,7 @@ function uuid() {
 router.post('/consultations', (req, res) => {
   const {
     doctorId, patientName, patientAge, patientGender,
-    patientLang, patientPhone, symptoms, aiResult, slot,
+    patientLang, patientPhone, symptoms, aiResult, slot, consultationType,
   } = req.body
 
   if (!doctorId || !patientName) {
@@ -46,6 +46,7 @@ router.post('/consultations', (req, res) => {
     symptoms:      symptoms      || '',
     aiResult:      aiResult      || null,
     slot:          slot          || '',
+    consultationType: consultationType || 'in_person',
     createdAt:     new Date().toISOString(),
     notes:         null,
     prescription:  null,

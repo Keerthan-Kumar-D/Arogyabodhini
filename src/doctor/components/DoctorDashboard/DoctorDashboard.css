@@ -57,6 +57,37 @@
 .dash-sidebar__name { font-size: 0.92rem; font-weight: 700; color: #fff; }
 .dash-sidebar__spec { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
 
+.dash-status-toggle {
+  margin: 0 16px 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 9px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.68);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dash-status-toggle--active {
+  background: rgba(46,125,50,0.28);
+  border-color: rgba(165,214,167,0.5);
+  color: #c8e6c9;
+}
+
+.dash-status-toggle__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #90a4ae;
+}
+
+.dash-status-toggle--active .dash-status-toggle__dot { background: #66bb6a; }
+
 /* ─── Nav ─── */
 .dash-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; flex: 1; }
 

@@ -15,9 +15,10 @@ const NAV = [
 const SEV_COLOR = { High: '#c62828', Moderate: '#e65100', Low: '#2e7d32' }
 
 const DoctorDashboard = ({ onOpenConsultation }) => {
-  const { doctor, logout } = useDoctorAuth()
+  const { doctor, logout, setActiveStatus } = useDoctorAuth()
   const [tab,           setTab]           = useState('waiting')
   const [consultations, setConsultations] = useState([])
+  const [statusSaving,   setStatusSaving] = useState(false)
 
   const refresh = useCallback(async () => {
     if (!doctor) return
@@ -54,6 +55,15 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
     await refresh()
   }
 
+  const handleStatusToggle = async () => {
+    setStatusSaving(true)
+    try {
+      await setActiveStatus(!doctor.isActive)
+    } finally {
+      setStatusSaving(false)
+    }
+  }
+
   const filtered = consultations.filter(c => {
     if (tab === 'waiting')   return c.status === 'waiting'
     if (tab === 'accepted')  return c.status === 'accepted'
@@ -68,7 +78,7 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
     completed: consultations.filter(c => c.status === 'completed').length,
   }
 
-  const fullDoc = getDoctorById(doctor?.id)
+  const fullDoc = getDoctorById(doctor?.id) || doctor
 
   return (
     <div className="dash-root">
@@ -93,6 +103,17 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
             <p className="dash-sidebar__spec">{doctor?.spec}</p>
           </div>
         </div>
+
+        <button
+          id="doctor-status-toggle"
+          className={`dash-status-toggle ${doctor?.isActive ? 'dash-status-toggle--active' : ''}`}
+          onClick={handleStatusToggle}
+          disabled={statusSaving}
+          aria-pressed={doctor?.isActive === true}
+        >
+          <span className="dash-status-toggle__dot" aria-hidden="true" />
+          {statusSaving ? 'Updating...' : doctor?.isActive ? 'Active - Accepting Video Requests' : 'Inactive - Go Active'}
+        </button>
 
         <nav className="dash-nav">
           {NAV.map(n => (
@@ -215,7 +236,7 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
                         {c.patientName}
                         {c._isDemo && <span className="dash-demo-badge">DEMO</span>}
                       </h3>
-                      <p>{c.patientAge && `${c.patientAge} yrs`} {c.patientGender} · 🗣 {c.patientLang} · 🕐 {c.slot}</p>
+                      <p>{c.patientAge && `${c.patientAge} yrs`} {c.patientGender} · 🗣 {c.patientLang}{c.consultationType !== 'video' && ` · 🕐 ${c.slot}`}</p>
                     </div>
                   </div>
 

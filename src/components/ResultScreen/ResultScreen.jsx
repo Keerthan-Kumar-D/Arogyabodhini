@@ -2,6 +2,7 @@ import React from 'react'
 import './ResultScreen.css'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
+import { getDiseaseName } from '../../utils/predictionDisplay'
 
 const SPECIALIST_ICONS = {
   'Cardiologist':'🫀','Neurologist':'🧠','General Physician':'🩺',
@@ -34,7 +35,6 @@ const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
             </h2>
             <p className="result-header__time">
               {new Date(result.analyzedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}
-              &nbsp;·&nbsp;{en('confidence')}: <strong>{result.confidence}%</strong>
             </p>
           </div>
         </div>
@@ -67,15 +67,34 @@ const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
             <BilingualText tKey="possibleConditions" as="span" size="sm" />
           </h3>
           <ul className="result-disease-list" aria-label={en('possibleConditions')}>
-            {result.possibleDiseases.map((d, i) => (
-              <li key={i} className="result-disease-item">
-                <span className="result-disease-item__dot" aria-hidden="true"/>
-                {/* Disease names are in English – no translation */}
-                {d}
-              </li>
-            ))}
+            {(result.possibleDiseases || []).map((d, i) => {
+              const name = getDiseaseName(d)
+              return (
+                <li key={name || i} className="result-disease-item">
+                  <span className="result-disease-item__dot" aria-hidden="true"/>
+                  <span>{name}</span>
+                </li>
+              )
+            })}
           </ul>
         </div>
+
+        {result.matchedSymptoms?.length > 0 && (
+          <div className="result-section">
+            <h3 className="result-section__title">
+              <span aria-hidden="true">🔎</span>{' '}
+              Matched symptoms
+            </h3>
+            <div className="result-matched-chips">
+              {result.matchedSymptoms.map((symptom, index) => (
+                <React.Fragment key={symptom}>
+                  <span className="result-matched-chip">{symptom}</span>
+                  {index < result.matchedSymptoms.length - 1 && <span aria-hidden="true">, </span>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Specialist – kept in English (Part 5) */}
         <div className="result-section">

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import authService from '../services/authService'
+import doctorStatusService from '../services/doctorStatusService'
 
 const DoctorContext = createContext(null)
 
@@ -12,9 +13,14 @@ export const DoctorProvider = ({ children }) => {
     setLoading(true); setError(null)
     // Small artificial delay for realism
     await new Promise(r => setTimeout(r, 600))
-    const result = authService.login(email, password)
+    const result = await authService.login(email, password)
     if (result.success) {
-      setDoctor(result.doctor)
+      let sessionDoctor = { ...result.doctor, isActive: false }
+      try {
+        sessionDoctor.isActive = await doctorStatusService.get(sessionDoctor.id)
+      } catch {}
+      authService.saveSession(sessionDoctor)
+      setDoctor(sessionDoctor)
     } else {
       setError(result.error)
     }
@@ -22,13 +28,22 @@ export const DoctorProvider = ({ children }) => {
     return result.success
   }, [])
 
+  const setActiveStatus = useCallback(async (isActive) => {
+    if (!doctor?.id) return false
+    const savedStatus = await doctorStatusService.set(doctor.id, isActive)
+    const updatedDoctor = { ...doctor, isActive: savedStatus }
+    authService.saveSession(updatedDoctor)
+    setDoctor(updatedDoctor)
+    return savedStatus
+  }, [doctor])
+
   const logout = useCallback(() => {
     authService.logout()
     setDoctor(null)
   }, [])
 
   return (
-    <DoctorContext.Provider value={{ doctor, login, logout, loading, error }}>
+    <DoctorContext.Provider value={{ doctor, login, logout, setActiveStatus, loading, error }}>
       {children}
     </DoctorContext.Provider>
   )

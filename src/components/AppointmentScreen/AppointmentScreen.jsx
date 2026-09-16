@@ -3,12 +3,15 @@ import './AppointmentScreen.css'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
 import consultationService from '../../doctor/services/consultationService'
+import doctorStatusService from '../../doctor/services/doctorStatusService'
 
 const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinVideoRoom }) => {
   const { en } = useLanguage()
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [confirmed, setConfirmed]           = useState(false)
   const [confirmedConsultId, setConfirmedConsultId] = useState(null)
+  const [submitError, setSubmitError]       = useState('')
+  const [doctorActive, setDoctorActive]     = useState(false)
   const [name, setName]                 = useState('')
   const [age,  setAge]                  = useState('')
   const [gender, setGender]             = useState('')
@@ -18,7 +21,8 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
 
   const handleConfirm = async (e) => {
     e.preventDefault()
-    if (!selectedSlot || !name.trim()) return
+    if ((!isVideo && !selectedSlot) || !name.trim()) return
+    setSubmitError('')
 
     // For video consultations: create a consultation request on the doctor's dashboard
     if (isVideo && doctor && result) {
@@ -32,11 +36,16 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
           patientPhone:  phone.trim(),
           symptoms:      result?.transcript || result?.symptoms || 'Not provided',
           aiResult:      result,
-          slot:          selectedSlot,
+          slot:          '',
+          consultationType: 'video',
         })
         setConfirmedConsultId(req.id)
+        const isActive = await doctorStatusService.get(doctor.id).catch(() => false)
+        setDoctorActive(isActive)
+        if (isActive) onJoinVideoRoom?.(req.id, name.trim())
+        return
       } catch (err) {
-        console.error('[AppointmentScreen] Failed to create request:', err)
+        setSubmitError(err.message || 'Unable to send the video consultation request.')
       }
     }
 
@@ -72,19 +81,15 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
               <p><strong>Specialization:</strong> {doctor.spec}</p>
               <p><strong>Hospital:</strong> {doctor.hospital}</p>
               <p><strong>Type:</strong> {isVideo ? '🎥 Video Consultation' : '🏥 In-person Visit'}</p>
-              {selectedSlot && <p><strong>Time:</strong> {selectedSlot}</p>}
+              {!isVideo && selectedSlot && <p><strong>Time:</strong> {selectedSlot}</p>}
               <p><strong>Patient:</strong> {name}{age && `, ${age} yrs`}{gender && `, ${gender}`}</p>
               {phone && <p><strong>Contact:</strong> {phone}</p>}
               <p><strong>Consultation Fee:</strong> {doctor.fee}</p>
-              {isVideo && confirmedConsultId && (
-                <p className="appt-success__video-note">
-                  🎥 Your request has been sent. Click <strong>Join Video Call</strong> below when the doctor accepts.
-                </p>
-              )}
+              {isVideo && confirmedConsultId && <p className="appt-success__video-note">🎥 Your request has been sent.</p>}
             </div>
 
             {/* For video: show Join Call button; for in-person: show Home button */}
-            {isVideo && confirmedConsultId ? (
+            {isVideo && confirmedConsultId && doctorActive ? (
               <div className="appt-success__actions">
                 <button
                   id="appt-join-call-btn"
@@ -190,26 +195,27 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
                 />
               </div>
 
-              {/* Slot selection */}
-              <div className="appt-field">
-                <label className="appt-label">
-                  Select Time Slot <span className="appt-required">*</span>
-                </label>
-                <div className="appt-slots">
-                  {doctor.slots.map(slot => (
-                    <button
-                      key={slot}
-                      type="button"
-                      id={`slot-${slot.replace(/\s|:/g, '-')}`}
-                      className={`appt-slot ${selectedSlot === slot ? 'appt-slot--selected' : ''}`}
-                      onClick={() => setSelectedSlot(slot)}
-                      aria-pressed={selectedSlot === slot}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+              {!isVideo && (
+                <div className="appt-field">
+                  <label className="appt-label">
+                    Select Time Slot <span className="appt-required">*</span>
+                  </label>
+                  <div className="appt-slots">
+                    {doctor.slots.map(slot => (
+                      <button
+                        key={slot}
+                        type="button"
+                        id={`slot-${slot.replace(/\s|:/g, '-')}`}
+                        className={`appt-slot ${selectedSlot === slot ? 'appt-slot--selected' : ''}`}
+                        onClick={() => setSelectedSlot(slot)}
+                        aria-pressed={selectedSlot === slot}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Availability note */}
               <div className="appt-avail-note">
@@ -221,7 +227,7 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
                 type="submit"
                 id="appt-confirm-btn"
                 className="appt-confirm-btn"
-                disabled={!selectedSlot || !name.trim()}
+                disabled={(!isVideo && !selectedSlot) || !name.trim()}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -229,6 +235,7 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
                 </svg>
                 Confirm {isVideo ? 'Video Consultation' : 'Appointment'}
               </button>
+              {submitError && <p className="appt-error" role="alert">{submitError}</p>}
             </form>
           </>
         )}

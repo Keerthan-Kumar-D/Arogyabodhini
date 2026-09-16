@@ -64,15 +64,11 @@ const DoctorDetailScreen = ({ doctor, lang, onBack, onBookAppointment, onVideoCo
           </div>
         </div>
 
-        {/* ── Stats row ── */}
+        {/* ── Stats row — no fees ── */}
         <div className="docdetail-stats">
           <div className="docdetail-stat">
             <span className="docdetail-stat__val">{doctor.exp}</span>
             <BilingualText tKey="experience" as="span" className="docdetail-stat__label" size="sm" />
-          </div>
-          <div className="docdetail-stat">
-            <span className="docdetail-stat__val docdetail-stat__val--fee">{doctor.fee}</span>
-            <BilingualText tKey="fee" as="span" className="docdetail-stat__label" size="sm" />
           </div>
           <div className="docdetail-stat">
             <span className="docdetail-stat__val">{doctor.online ? '🟢 Online' : '🏥 In-person'}</span>
@@ -97,17 +93,19 @@ const DoctorDetailScreen = ({ doctor, lang, onBack, onBookAppointment, onVideoCo
         </div>
 
         {/* ── Education ── */}
-        <div className="docdetail-section">
-          <h2 className="docdetail-section__title">Education & Training</h2>
-          <ul className="docdetail-edu-list">
-            {doctor.education.map((e, i) => (
-              <li key={i} className="docdetail-edu-item">
-                <span className="docdetail-edu-dot" aria-hidden="true" />
-                {e}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {doctor.education && doctor.education.length > 0 && (
+          <div className="docdetail-section">
+            <h2 className="docdetail-section__title">Education &amp; Training</h2>
+            <ul className="docdetail-edu-list">
+              {doctor.education.map((e, i) => (
+                <li key={i} className="docdetail-edu-item">
+                  <span className="docdetail-edu-dot" aria-hidden="true" />
+                  {e}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* ── Languages ── */}
         <div className="docdetail-section">
@@ -125,14 +123,16 @@ const DoctorDetailScreen = ({ doctor, lang, onBack, onBookAppointment, onVideoCo
         </div>
 
         {/* ── Available Slots ── */}
-        <div className="docdetail-section">
-          <h2 className="docdetail-section__title">Available Slots</h2>
-          <div className="docdetail-slots">
-            {doctor.slots.map(slot => (
-              <span key={slot} className="docdetail-slot">{slot}</span>
-            ))}
+        {doctor.slots && doctor.slots.length > 0 && (
+          <div className="docdetail-section">
+            <h2 className="docdetail-section__title">Available Slots</h2>
+            <div className="docdetail-slots">
+              {doctor.slots.map(slot => (
+                <span key={slot} className="docdetail-slot">{slot}</span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── Action buttons ── */}
         <div className="docdetail-actions">
@@ -167,9 +167,11 @@ const DoctorDetailScreen = ({ doctor, lang, onBack, onBookAppointment, onVideoCo
         </div>
 
         {/* Contact */}
-        <p className="docdetail-phone">
-          📞 {doctor.phone}
-        </p>
+        {doctor.phone && (
+          <p className="docdetail-phone">
+            📞 {doctor.phone}
+          </p>
+        )}
       </div>
     </div>
   )

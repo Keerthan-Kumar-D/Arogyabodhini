@@ -4,6 +4,9 @@ const { errorHandler } = require('./middleware/errorHandler')
 const symptomsRouter       = require('./routes/symptoms')
 const videoRouter          = require('./routes/video')
 const consultationsRouter  = require('./routes/consultations')
+const doctorsRouter        = require('./routes/doctors')
+const doctorAuthRouter     = require('./routes/doctorAuth')
+const doctorStatusRouter   = require('./routes/doctorStatus')
 
 const app = express()
 
@@ -56,6 +59,9 @@ app.get('/health', (_req, res) => {
 app.use('/api', symptomsRouter)
 app.use('/api', videoRouter)
 app.use('/api', consultationsRouter)
+app.use('/api', doctorsRouter)
+app.use('/api', doctorAuthRouter)
+app.use('/api', doctorStatusRouter)
 
 // ─── 404 HANDLER ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

@@ -2,10 +2,66 @@ import React, { useState } from 'react'
 import './DoctorListScreen.css'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
-import { getDoctorsBySpec, sortDoctorsByLanguage } from '../../data/doctors'
+
+/**
+ * Normalise a doctor object from MongoDB (via API) into the shape
+ * expected by the DoctorListScreen and DoctorDetailScreen.
+ *
+ * MongoDB shape             → UI shape
+ * ─────────────────────────────────────
+ * specialty                 → spec
+ * languages                 → langs
+ * grad                      → bgColor  (gradient string)
+ * availability              → availLabel
+ * availabilityStatus        → availStatus
+ * bio                       → about
+ * treatments                → specializations
+ * consultationTypes         → determines online flag
+ * experience (number)       → exp (string)
+ */
+const normaliseDoctor = (raw) => ({
+  // ── identity ──────────────────────────────────────────────────────────────
+  id:              raw.id   || raw._id?.toString() || String(Math.random()),
+  name:            raw.name || 'Unknown Doctor',
+  initials:        raw.initials || (raw.name || 'Dr').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+
+  // ── profile ───────────────────────────────────────────────────────────────
+  spec:            raw.specialty  || raw.spec     || 'General Physician',
+  hospital:        raw.hospital   || raw.location || '',
+  exp:             typeof raw.experience === 'number' ? `${raw.experience} yrs` : (raw.exp || ''),
+  expYears:        raw.experience || 0,
+  rating:          raw.rating   || 4.5,
+  reviews:         raw.reviews  || 0,
+  langs:           raw.languages || raw.langs  || ['English'],
+
+  // ── visual ────────────────────────────────────────────────────────────────
+  bgColor:         raw.grad || raw.bgColor || 'linear-gradient(135deg,#10b981,#059669)',
+
+  // ── availability ─────────────────────────────────────────────────────────
+  availStatus:     raw.availabilityStatus || raw.availStatus || 'soon',
+  availLabel:      raw.availability       || raw.availLabel  || 'Contact for availability',
+
+  // ── mode ──────────────────────────────────────────────────────────────────
+  online: Array.isArray(raw.consultationTypes)
+    ? raw.consultationTypes.includes('online')
+    : (raw.online ?? true),
+
+  // ── detail page ───────────────────────────────────────────────────────────
+  about:           raw.bio || raw.about || `${raw.name || 'This doctor'} is a qualified specialist.`,
+  specializations: raw.treatments || raw.specializations || [],
+  education:       raw.education  || [],
+  slots:           raw.slots      || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'],
+  phone:           raw.phone      || '',
+
+  // emergency flag
+  isEmergencyAvailable: raw.isEmergencyAvailable || false,
+  isFileDoctor: /^doc-\d+$/i.test(String(raw.id || '')),
+})
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
-  const { t, en } = useLanguage()
+  const { en, t } = useLanguage()
   const [booked, setBooked] = useState(null)
 
   const handleBook = (id) => {
@@ -15,9 +71,17 @@ const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
 
   const patientLang = lang?.label || 'English'
 
-  // Filter by AI-recommended specialization, then sort by patient language
-  const filtered = getDoctorsBySpec(result?.recommendedSpecialist)
-  const sorted   = sortDoctorsByLanguage(filtered, patientLang)
+  // ── Use doctors from the API response (MongoDB), normalised to UI shape ───
+  const rawDoctors   = result?.recommendedDoctors || []
+  const doctors      = rawDoctors.map(normaliseDoctor)
+
+  // Sort: doctors speaking the patient's language appear first
+  const sorted = [...doctors].sort((a, b) => {
+    if (a.isFileDoctor !== b.isFileDoctor) return a.isFileDoctor ? -1 : 1
+    const aMatch = a.langs.some(l => l.toLowerCase() === patientLang.toLowerCase()) ? 0 : 1
+    const bMatch = b.langs.some(l => l.toLowerCase() === patientLang.toLowerCase()) ? 0 : 1
+    return aMatch - bMatch
+  })
 
   return (
     <div className="doclist-screen anim-in">
@@ -48,9 +112,13 @@ const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
           )}
         </p>
 
+        {/* Empty state */}
         {sorted.length === 0 && (
           <div className="doclist-empty">
-            <p>No doctors found for <strong>{result.recommendedSpecialist}</strong>. Showing General Physicians.</p>
+            <p>No doctors found for <strong>{result.recommendedSpecialist}</strong> in the database.</p>
+            <p style={{ marginTop: '0.5rem', opacity: 0.7, fontSize: '0.9rem' }}>
+              Please consult a General Physician or visit your nearest clinic.
+            </p>
           </div>
         )}
 
@@ -99,15 +167,15 @@ const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
                   </div>
                 </div>
 
+                {/* Info row — no fees */}
                 <div className="doc-card__info-row">
                   {[
                     { tKey: 'experience', val: doc.exp },
-                    { tKey: 'fee',        val: doc.fee },
                     { tKey: 'mode',       val: doc.online ? en('online') : en('inPerson') },
                   ].map(({ tKey, val }) => (
                     <div key={tKey} className="doc-card__info-cell">
                       <BilingualText tKey={tKey} as="span" className="doc-card__info-label" size="sm" />
-                      <span className={`doc-card__info-val${tKey === 'fee' ? ' doc-card__info-val--fee' : ''}`}>{val}</span>
+                      <span className="doc-card__info-val">{val}</span>
                     </div>
                   ))}
                 </div>
@@ -124,9 +192,8 @@ const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
                   </div>
                 </div>
 
-                {/* ── Action buttons ── */}
+                {/* Action buttons */}
                 <div className="doc-card__actions">
-                  {/* View Profile — navigates to DoctorDetailScreen */}
                   <button
                     id={`${doc.id}-profile`}
                     className="doc-action-btn doc-action-btn--profile"
@@ -141,7 +208,6 @@ const DoctorListScreen = ({ result, lang, onBack, onHome, onViewDoctor }) => {
                     View Profile
                   </button>
 
-                  {/* Quick Book */}
                   <button
                     id={`${doc.id}-book`}
                     className={`doc-action-btn doc-action-btn--book ${booked === doc.id ? 'doc-action-btn--booked' : ''}`}

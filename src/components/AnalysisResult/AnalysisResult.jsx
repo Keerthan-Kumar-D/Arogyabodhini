@@ -1,5 +1,6 @@
 import React from 'react'
 import './AnalysisResult.css'
+import { getDiseaseName } from '../../utils/predictionDisplay'
 
 const SEVERITY_CONFIG = {
   High:     { color: '#ef4444', bg: 'rgba(239,68,68,.1)',   border: 'rgba(239,68,68,.25)',   icon: '🚨', label: 'High Severity'     },
@@ -41,21 +42,6 @@ const AnalysisResult = ({ result, onReset }) => {
           </div>
         </div>
 
-        {/* Confidence meter */}
-        <div className="result-confidence" aria-label={`Confidence: ${result.confidence}%`}>
-          <div className="result-confidence__ring">
-            <svg viewBox="0 0 44 44" aria-hidden="true">
-              <circle cx="22" cy="22" r="18" className="result-confidence__track" />
-              <circle
-                cx="22" cy="22" r="18"
-                className="result-confidence__fill"
-                strokeDasharray={`${(result.confidence / 100) * 113} 113`}
-              />
-            </svg>
-            <span className="result-confidence__val">{result.confidence}%</span>
-          </div>
-          <span className="result-confidence__lbl">Confidence</span>
-        </div>
       </div>
 
       {/* ── Main grid ── */}
@@ -68,12 +54,15 @@ const AnalysisResult = ({ result, onReset }) => {
             Possible Conditions
           </div>
           <ul className="result-diseases" aria-label="Possible conditions">
-            {result.possibleDiseases.map((d, i) => (
-              <li key={d} className="result-disease" style={{ animationDelay: `${i * 0.08}s` }}>
-                <span className="result-disease__dot" aria-hidden="true" />
-                {d}
-              </li>
-            ))}
+            {(result.possibleDiseases || []).map((d, i) => {
+              const name = getDiseaseName(d)
+              return (
+                <li key={name || i} className="result-disease" style={{ animationDelay: `${i * 0.08}s` }}>
+                  <span className="result-disease__dot" aria-hidden="true" />
+                  <span className="result-disease__name">{name}</span>
+                </li>
+              )
+            })}
           </ul>
         </div>
 
@@ -105,6 +94,20 @@ const AnalysisResult = ({ result, onReset }) => {
         </div>
       </div>
 
+      {result.matchedSymptoms?.length > 0 && (
+        <div className="result-matched" aria-label="Matched symptoms">
+          <div className="result-card__label">Matched symptoms</div>
+          <div className="result-matched__chips">
+            {result.matchedSymptoms.map((symptom, index) => (
+              <React.Fragment key={symptom}>
+                <span className="result-matched__chip">{symptom}</span>
+                {index < result.matchedSymptoms.length - 1 && <span aria-hidden="true">, </span>}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Urgency note ── */}
       {result.urgencyNote && (
         <div
@@ -123,8 +126,8 @@ const AnalysisResult = ({ result, onReset }) => {
 
       {/* ── Disclaimer ── */}
       <p className="result-disclaimer">
-        ⚕️ This is an AI-powered preliminary assessment. It does not replace professional medical advice.
-        Always consult a qualified doctor for diagnosis and treatment.
+        ⚕️ These are model predictions of possible conditions, not a confirmed diagnosis.
+        This tool is not a medically validated diagnostic system. Always consult a qualified doctor.
       </p>
 
       {/* ── Actions ── */}
