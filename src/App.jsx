@@ -60,6 +60,7 @@ function AppInner() {
   const [showLangPicker,  setShowLangPicker]  = useState(false)
   const [selectedDoctor,  setSelectedDoctor]  = useState(null)
   const [appointmentMode, setAppointmentMode] = useState('book')
+  const [retryText,       setRetryText]       = useState('')
   const [videoConsultId,  setVideoConsultId]  = useState(() => loadVideoSession()?.consultId || null)
   const [videoPatientName,setVideoPatientName]= useState(() => loadVideoSession()?.patientName || '')
   const transcriptRef = useRef('')
@@ -91,10 +92,11 @@ function AppInner() {
     setActiveLang(selectedLang)
     setApiError(null); setResult(null)
     transcriptRef.current = text
+    setRetryText(text)
     setScreen(SCREENS.ANALYZING)
     try {
       const data = await analyzeAPI(text, selectedLang.code)
-      setResult(data); setScreen(SCREENS.RESULT)
+      setResult({ ...data, inputSymptoms: text }); setScreen(SCREENS.RESULT)
     } catch (err) {
       setApiError(err.message || 'Unable to reach the server.')
       setScreen(SCREENS.HOME)
@@ -104,11 +106,12 @@ function AppInner() {
   // ── Listening done ──
   const handleListeningDone = useCallback(async (transcript) => {
     transcriptRef.current = transcript
+    setRetryText(transcript)
     setScreen(SCREENS.ANALYZING)
     const currentLang = activeLang || lang
     try {
       const data = await analyzeAPI(transcript, currentLang.code)
-      setResult(data); setScreen(SCREENS.RESULT)
+      setResult({ ...data, inputSymptoms: transcript }); setScreen(SCREENS.RESULT)
     } catch (err) {
       setApiError(err.message || 'Unable to reach the server.')
       setScreen(SCREENS.HOME)
@@ -123,6 +126,7 @@ function AppInner() {
     setSelectedDoctor(null)
     setVideoConsultId(null)
     setVideoPatientName('')
+    setRetryText('')
     setScreen(SCREENS.HOME)
   }, [])
 
@@ -182,6 +186,7 @@ function AppInner() {
         {screen === SCREENS.HOME && (
           <HomeScreen
             apiError={apiError}
+            initialText={retryText}
             onStartListening={handleStartListening}
             onTextSubmit={handleTextSubmit}
           />
@@ -198,6 +203,7 @@ function AppInner() {
             result={result}
             lang={currentLang}
             onSpeakAgain={handleReset}
+            onTryAgain={() => setScreen(SCREENS.HOME)}
             onFindDoctors={() => setScreen(SCREENS.DOCTORS)}
           />
         )}

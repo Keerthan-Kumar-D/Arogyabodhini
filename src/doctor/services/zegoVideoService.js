@@ -21,7 +21,7 @@ const APP_ID   = parseInt(import.meta.env.VITE_ZEGO_APP_ID || '0', 10)
  * Rules: max 128 chars, only a-z A-Z 0-9 _ -
  */
 export function buildRoomId(consultationId) {
-  return `ab-${consultationId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 128)
+  return `consultation_${consultationId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 128)
 }
 
 /**

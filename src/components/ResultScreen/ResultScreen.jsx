@@ -10,17 +10,54 @@ const SPECIALIST_ICONS = {
   'Ophthalmologist':'👁️','Urologist':'🧪','Psychiatrist':'🧘','Endocrinologist':'⚗️',
 }
 
-const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
+const ResultScreen = ({ result, onSpeakAgain, onTryAgain, onFindDoctors }) => {
   const { t, en } = useLanguage()
 
+  if (result.noMatch) {
+    return (
+      <div className="result-screen anim-in">
+        <div className="result-screen__inner">
+          <div className="result-header">
+            <div className="result-header__check" aria-hidden="true">ℹ️</div>
+            <div>
+              <h2 className="result-header__title">No matching symptoms found</h2>
+              <p className="result-header__time">Please try different words.</p>
+            </div>
+          </div>
+
+          <div className="result-note" role="alert">
+            <span aria-hidden="true">💡</span>
+            <p>{result.noMatchMessage}</p>
+          </div>
+
+          <div className="result-section">
+            <h3 className="result-section__title">Your symptoms</h3>
+            <p>{result.inputSymptoms}</p>
+          </div>
+
+          <div className="result-actions">
+            <button id="try-again-btn" className="result-btn result-btn--primary" onClick={onTryAgain}>
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const SEVERITY_CONFIG = {
+    Emergency: { color:'#c62828', bg:'#ffebee', border:'#ef9a9a', icon:'🚨', tKey:'emergency' },
     High:     { color:'#c62828', bg:'#ffebee', border:'#ef9a9a', icon:'🚨', tKey:'severityHigh' },
     Moderate: { color:'#e65100', bg:'#fff3e0', border:'#ffcc80', icon:'⚠️', tKey:'severityMod'  },
     Low:      { color:'#2e7d32', bg:'#e8f5e9', border:'#a5d6a7', icon:'✅', tKey:'severityLow'  },
   }
 
-  const sev = SEVERITY_CONFIG[result.severity] || SEVERITY_CONFIG.Low
+  const severityObject = typeof result.severity === 'object' && result.severity
+    ? result.severity
+    : { level: 1, label: result.severity || 'Low', baselineLevel: 1, redFlagsDetected: false, reasons: [] }
+  const sev = SEVERITY_CONFIG[severityObject.label] || SEVERITY_CONFIG.Low
   const specialistIcon = SPECIALIST_ICONS[result.recommendedSpecialist] || '👨‍⚕️'
+  const severityReason = severityObject.reasons?.[0] || 'Your reported symptoms may require prompt medical evaluation.'
 
   return (
     <div className="result-screen anim-in">
@@ -40,14 +77,14 @@ const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
         </div>
 
         {/* Emergency */}
-        {result.emergencyFlag && (
+        {(result.emergencyFlag || severityObject.level >= 4) && (
           <div className="result-emergency" role="alert" aria-live="assertive">
             <span className="result-emergency__icon" aria-hidden="true">🚨</span>
             <div>
               <p className="result-emergency__title">
                 <BilingualText tKey="emergency" as="span" size="md" />
               </p>
-              <p className="result-emergency__text">{result.urgencyNote}</p>
+              <p className="result-emergency__text">{result.urgencyNote || 'Your reported symptoms include warning signs that may require immediate medical evaluation.'}</p>
             </div>
           </div>
         )}
@@ -55,10 +92,17 @@ const ResultScreen = ({ result, onSpeakAgain, onFindDoctors }) => {
         {/* Severity */}
         <div className="result-severity"
           style={{ background:sev.bg, borderColor:sev.border, color:sev.color }}
-          aria-label={t(sev.tKey)}>
+          aria-label={severityObject.label || 'Low'}>
           <span className="result-severity__icon" aria-hidden="true">{sev.icon}</span>
-          <BilingualText tKey={sev.tKey} as="span" className="result-severity__label" size="sm" />
+          <span className="result-severity__label">{severityObject.label || 'Low'}</span>
         </div>
+
+        {severityReason && (
+          <div className="result-note" role="note">
+            <span aria-hidden="true">ℹ️</span>
+            <p>{severityReason}</p>
+          </div>
+        )}
 
         {/* Diseases */}
         <div className="result-section">

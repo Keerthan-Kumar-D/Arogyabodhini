@@ -41,12 +41,14 @@ const ts = () => new Date().toISOString()
  *   userName       {string} - Display name shown to the other participant
  *   onEnd          {fn}     - Called when the local user ends the call
  */
-const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onEnd }) => {
+const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', autoJoin = false, onEnd }) => {
   const containerRef   = useRef(null)
   const zpRef          = useRef(null)
   const mountedRef     = useRef(true)
   const joiningRef     = useRef(false)
   const joinedRef      = useRef(false)
+  const autoJoinStartedRef = useRef(false)
+  const joinAttemptRef = useRef(0)
   const joinTimeoutRef = useRef(null)
   const [status, setStatus] = useState(
     isZegoConfigured() ? STATUS.IDLE : STATUS.UNCONFIGURED
@@ -85,7 +87,8 @@ const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onE
       return
     }
 
-    joiningRef.current = true
+    const joinAttempt = joinAttemptRef.current + 1
+    joinAttemptRef.current = joinAttempt
     setStatus(STATUS.FETCHING)
     setErrorMsg('')
     clearJoinTimeout()
@@ -93,9 +96,11 @@ const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onE
     try {
       // ZegoUIKitPrebuilt.create() is a singleton — always destroy before a new session
       destroyZego()
+      joiningRef.current = true
 
       console.log('[VIDEO]', ts(), 'fetching token', { roomId, userId, userName, role })
       const kitToken = await createKitToken({ roomId, userId, userName })
+      if (!mountedRef.current || joinAttempt !== joinAttemptRef.current) return
       console.log('[VIDEO]', ts(), 'token received, creating Zego instance', { roomId, userId })
 
       const zp = ZegoUIKitPrebuilt.create(kitToken)
@@ -108,7 +113,7 @@ const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onE
       // roomID/userID/userName come from kitToken — official examples omit them here
       zp.joinRoom({
         container: containerRef.current,
-        showPreJoinView: true,
+        showPreJoinView: !autoJoin,
 
         preJoinViewConfig: {
           title: role === 'doctor' ? 'Start Video Consultation' : 'Join Video Consultation',
@@ -186,7 +191,8 @@ const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onE
           setStatus(STATUS.ERROR)
         }
       }, 90000)
-    } catch (err) {
+      } catch (err) {
+        if (joinAttempt !== joinAttemptRef.current || !mountedRef.current) return
       console.error('[VIDEO]', ts(), 'Join error:', err)
       joiningRef.current = false
       destroyZego()
@@ -205,18 +211,24 @@ const VideoCallRoom = ({ consultationId, role = 'doctor', userName = 'User', onE
         setStatus(STATUS.ERROR)
       }
     }
-  }, [roomId, userId, userName, role, onEnd, destroyZego, clearJoinTimeout])
+  }, [roomId, userId, userName, role, autoJoin, onEnd, destroyZego, clearJoinTimeout])
 
   // Cleanup only on true unmount — not on re-render
   useEffect(() => {
     mountedRef.current = true
     console.log('[VIDEO]', ts(), 'component mounted', { roomId, userId, userName, role })
+    if (autoJoin && !autoJoinStartedRef.current) {
+      autoJoinStartedRef.current = true
+      joinCall()
+    }
     return () => {
       console.log('[VIDEO]', ts(), 'component unmount cleanup', { roomId, userId })
       mountedRef.current = false
+      joinAttemptRef.current += 1
+      autoJoinStartedRef.current = false
       destroyZego()
     }
-  }, [roomId, userId, userName, role, destroyZego])
+  }, [roomId, userId, userName, role, autoJoin, destroyZego, joinCall])
 
   const handleRetry = () => {
     destroyZego()

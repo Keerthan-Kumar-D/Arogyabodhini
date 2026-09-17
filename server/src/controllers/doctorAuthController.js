@@ -7,7 +7,7 @@ const slugify = (value) => String(value || '')
   .replace(/^-|-$/g, '')
 
 const toDoctorProfile = (doctor) => ({
-  id: doctor._id.toString(),
+  id: doctor.id || doctor._id.toString(),
   name: doctor.name || 'Doctor',
   spec: doctor.specialty || doctor.spec || 'General Physician',
   regNo: doctor.entry_id ? `DB-${doctor.entry_id}` : `DB-${doctor._id.toString().slice(-8)}`,

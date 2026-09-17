@@ -2,6 +2,7 @@ const { loadSymptomDataset } = require('../data/csvLoader')
 const { trainBernoulliNB, predictProba } = require('./bernoulliNaiveBayes')
 const { matchSymptomsFromText, toDisplaySymptom } = require('./symptomMatcher')
 const { EMERGENCY_PATTERNS } = require('../data/mockData')
+const { calculateSeverity } = require('./severityService')
 
 const HIGH_SYMPTOMS = new Set([
   'chest_pain', 'breathlessness', 'high_fever', 'coma', 'palpitations',
@@ -67,18 +68,21 @@ const predictFromSymptomText = (text) => {
     .filter((index) => Number.isInteger(index))
 
   const isEmergency = detectEmergency(text)
-  const severity = inferSeverity(matchedFeatures, isEmergency)
   const matchedSymptoms = matchedFeatures.map(toDisplaySymptom)
 
   if (observedIndices.length === 0) {
+    const severity = calculateSeverity({ disease: null, symptomsText: text })
     return {
       possibleDiseases: [],
+      predictedDisease: null,
       matchedSymptoms,
       matchedFeatures,
       confidence: 0,
-      severity,
-      emergencyFlag: isEmergency,
-      urgencyNote: buildUrgencyNote(isEmergency, 0),
+      severity: severity.severity,
+      emergencyFlag: severity.severity.level >= 4,
+      urgencyNote: severity.action.message,
+      action: severity.action,
+      topDisease: null,
     }
   }
 
@@ -90,16 +94,21 @@ const predictFromSymptomText = (text) => {
     }))
 
   const confidence = Math.min(95, Math.round((ranked[0]?.probability || 0) * 100))
+  const topDisease = ranked[0]?.disease || null
+  const severity = calculateSeverity({ disease: topDisease, symptomsText: text })
 
   return {
     possibleDiseases: ranked,
+    predictions: ranked,
+    predictedDisease: topDisease,
     matchedSymptoms,
     matchedFeatures,
     confidence,
-    severity,
-    emergencyFlag: isEmergency,
-    urgencyNote: buildUrgencyNote(isEmergency, matchedFeatures.length),
-    topDisease: ranked[0]?.disease || null,
+    severity: severity.severity,
+    emergencyFlag: severity.severity.level >= 4,
+    urgencyNote: severity.action.message,
+    action: severity.action,
+    topDisease,
   }
 }
 

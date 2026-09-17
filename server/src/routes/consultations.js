@@ -26,8 +26,8 @@ function uuid() {
 // ── CREATE ──────────────────────────────────────────────────────────────────
 router.post('/consultations', (req, res) => {
   const {
-    doctorId, patientName, patientAge, patientGender,
-    patientLang, patientPhone, symptoms, aiResult, slot, consultationType,
+    doctorId, doctorName, patientName, patientAge, patientGender,
+    patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType,
   } = req.body
 
   if (!doctorId || !patientName) {
@@ -36,14 +36,19 @@ router.post('/consultations', (req, res) => {
 
   const consultation = {
     id: uuid(),
+    requestId: null,
+    roomId: null,
     status: 'waiting',
     doctorId,
+    doctorName:     doctorName || '',
     patientName,
     patientAge:    patientAge    || '',
     patientGender: patientGender || '',
     patientLang:   patientLang   || 'English',
     patientPhone:  patientPhone  || '',
-    symptoms:      symptoms      || '',
+    patientContact: patientContact || patientPhone || '',
+    patientSymptoms: patientSymptoms || symptoms || '',
+    symptoms:      symptoms      || patientSymptoms || '',
     aiResult:      aiResult      || null,
     slot:          slot          || '',
     consultationType: consultationType || 'in_person',
@@ -51,6 +56,9 @@ router.post('/consultations', (req, res) => {
     notes:         null,
     prescription:  null,
   }
+
+  consultation.requestId = consultation.id
+  consultation.roomId = `consultation_${consultation.id}`
 
   consultations.unshift(consultation)
   console.log(`[consultations] Created: ${consultation.id} for doctor ${doctorId} (patient: ${patientName})`)

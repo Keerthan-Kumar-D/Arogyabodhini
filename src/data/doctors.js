@@ -6,7 +6,7 @@
 
 const DOCTORS = [
   {
-    id: 'doc-priya-sharma',
+    id: 'doc-001',
     name: 'Dr. Priya Sharma',
     initials: 'PS',
     bgColor: '#1565c0',

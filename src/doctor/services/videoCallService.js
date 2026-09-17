@@ -6,7 +6,7 @@
  * To integrate ZEGOCLOUD (or any other provider):
  *   1. Install the SDK
  *   2. Replace the implementation of each method below
- *   3. Keep the interface identical — useVideoCall hook and VideoCallPlaceholder stay unchanged
+ *   3. Keep the interface identical — useVideoCall hook and room components stay unchanged
  *
  * Interface contract:
  *   init(config)      → Promise<void>

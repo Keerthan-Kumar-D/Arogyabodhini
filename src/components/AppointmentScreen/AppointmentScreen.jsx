@@ -3,7 +3,6 @@ import './AppointmentScreen.css'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
 import consultationService from '../../doctor/services/consultationService'
-import doctorStatusService from '../../doctor/services/doctorStatusService'
 
 const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinVideoRoom }) => {
   const { en } = useLanguage()
@@ -11,7 +10,6 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
   const [confirmed, setConfirmed]           = useState(false)
   const [confirmedConsultId, setConfirmedConsultId] = useState(null)
   const [submitError, setSubmitError]       = useState('')
-  const [doctorActive, setDoctorActive]     = useState(false)
   const [name, setName]                 = useState('')
   const [age,  setAge]                  = useState('')
   const [gender, setGender]             = useState('')
@@ -27,22 +25,40 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
     // For video consultations: create a consultation request on the doctor's dashboard
     if (isVideo && doctor && result) {
       try {
+        const severity = typeof result.severity === 'object'
+          ? result.severity.label
+          : result.severity
+        const patientSymptoms = result.inputSymptoms
+          || result.matchedSymptoms?.join(', ')
+          || 'Not provided'
+
         const req = await consultationService.createRequest({
           doctorId:      doctor.id,
+          doctorName:    doctor.name,
           patientName:   name.trim(),
           patientAge:    age.trim(),
           patientGender: gender,
           patientLang:   lang?.label || 'English',
           patientPhone:  phone.trim(),
-          symptoms:      result?.transcript || result?.symptoms || 'Not provided',
-          aiResult:      result,
+          patientContact: phone.trim(),
+          patientSymptoms,
+          symptoms:      patientSymptoms,
+          aiResult: {
+            predictedDisease: result.predictedDisease || null,
+            possibleDiseases: (result.possibleDiseases || []).map(item =>
+              typeof item === 'string' ? item : item.disease
+            ).filter(Boolean),
+            recommendedSpecialist: result.recommendedSpecialist || null,
+            severity: severity || null,
+            confidence: result.confidence || 0,
+            emergencyFlag: result.emergencyFlag === true,
+            urgencyNote: result.urgencyNote || '',
+          },
           slot:          '',
           consultationType: 'video',
         })
         setConfirmedConsultId(req.id)
-        const isActive = await doctorStatusService.get(doctor.id).catch(() => false)
-        setDoctorActive(isActive)
-        if (isActive) onJoinVideoRoom?.(req.id, name.trim())
+        onJoinVideoRoom?.(req.id, name.trim())
         return
       } catch (err) {
         setSubmitError(err.message || 'Unable to send the video consultation request.')
@@ -89,7 +105,7 @@ const AppointmentScreen = ({ doctor, mode, result, lang, onBack, onHome, onJoinV
             </div>
 
             {/* For video: show Join Call button; for in-person: show Home button */}
-            {isVideo && confirmedConsultId && doctorActive ? (
+            {isVideo && confirmedConsultId ? (
               <div className="appt-success__actions">
                 <button
                   id="appt-join-call-btn"

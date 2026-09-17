@@ -116,7 +116,7 @@ const PatientVideoRoom = ({ consultationId, patientName, onBack, onHome }) => {
         <div className="pvr-info-card">
           <div className="pvr-info-row">
             <span className="pvr-info-label">Doctor</span>
-            <span className="pvr-info-val">{consult?.doctorId ? (consult.doctorId.replace(/-/g,' ').replace(/doc /i,'Dr. ')) : 'Your Doctor'}</span>
+            <span className="pvr-info-val">{consult?.doctorName || 'Your Doctor'}</span>
           </div>
           <div className="pvr-info-row">
             <span className="pvr-info-label">Patient</span>
@@ -148,24 +148,15 @@ const PatientVideoRoom = ({ consultationId, patientName, onBack, onHome }) => {
           </div>
         )}
 
-        {/* Waiting for acceptance */}
-        {!fetchError && consult?.status === 'waiting' && (
-          <div className="pvr-waiting">
-            <div className="pvr-waiting__spinner" />
-            <h3>Waiting for Doctor to Accept</h3>
-            <p>Your request has been sent. The doctor will accept shortly and you can then join the video call.</p>
-            <p className="pvr-waiting__hint">This page will update automatically.</p>
-          </div>
-        )}
-
-        {/* Doctor accepted — show video room */}
-        {!fetchError && doctorAccepted && !callEnded && (
+        {/* Enter the shared room immediately; the doctor can join after accepting. */}
+        {!fetchError && (consult?.status === 'waiting' || doctorAccepted) && !callEnded && (
           <div className="pvr-video-section">
             <VideoCallRoom
               key={consultationId}
               consultationId={consultationId}
               role="patient"
               userName={patientName || 'Patient'}
+              autoJoin
               onEnd={handleCallEnd}
             />
           </div>

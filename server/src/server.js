@@ -35,6 +35,11 @@ const startServer = async () => {
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
     process.on('SIGINT', () => gracefulShutdown('SIGINT'))
   } catch (error) {
+    if (error && error.code === 'EADDRINUSE') {
+      console.warn(`Port ${PORT} is already in use. An existing MediAI backend is already running; not starting a second server.`)
+      return
+    }
+
     console.error('Failed to start server:', error.message)
     process.exit(1)
   }

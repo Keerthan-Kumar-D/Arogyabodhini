@@ -81,6 +81,7 @@ const ConsultationRoom = ({ consultation, onBack }) => {
               consultationId={consultation.id}
               role="doctor"
               userName={doctor?.name || 'Doctor'}
+              autoJoin={consultation.consultationType === 'video'}
             />
           </div>
 

@@ -8,7 +8,6 @@ const DoctorLogin = ({ onSwitchToPatient }) => {
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
-
   const demo = getDemoCredentials()
 
   const handleSubmit = async (e) => {
@@ -103,6 +102,7 @@ const DoctorLogin = ({ onSwitchToPatient }) => {
           >
             Use Demo Credentials
           </button>
+
         </form>
 
         <p className="dr-login-demo-hint">

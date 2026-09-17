@@ -20,11 +20,11 @@ const API = apiUrl('/api/consultations')
 export const consultationService = {
 
   /** Create a new consultation request (called from Patient AppointmentScreen) */
-  async createRequest({ doctorId, patientName, patientAge, patientGender, patientLang, patientPhone, symptoms, aiResult, slot, consultationType }) {
+  async createRequest({ doctorId, doctorName, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }) {
     const res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ doctorId, patientName, patientAge, patientGender, patientLang, patientPhone, symptoms, aiResult, slot, consultationType }),
+      body: JSON.stringify({ doctorId, doctorName, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }),
     })
     const data = await res.json()
     if (!data.success) throw new Error(data.message || 'Failed to create consultation request.')

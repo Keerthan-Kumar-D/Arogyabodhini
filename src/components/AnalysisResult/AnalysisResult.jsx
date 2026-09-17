@@ -3,9 +3,10 @@ import './AnalysisResult.css'
 import { getDiseaseName } from '../../utils/predictionDisplay'
 
 const SEVERITY_CONFIG = {
-  High:     { color: '#ef4444', bg: 'rgba(239,68,68,.1)',   border: 'rgba(239,68,68,.25)',   icon: '🚨', label: 'High Severity'     },
-  Moderate: { color: '#f59e0b', bg: 'rgba(245,158,11,.1)',  border: 'rgba(245,158,11,.25)',  icon: '⚠️', label: 'Moderate Severity' },
-  Low:      { color: '#10b981', bg: 'rgba(16,185,129,.1)',  border: 'rgba(16,185,129,.25)',  icon: '✅', label: 'Low Severity'      },
+  Emergency: { color: '#ef4444', bg: 'rgba(239,68,68,.12)', border: 'rgba(239,68,68,.35)', icon: '🚨', label: 'Emergency' },
+  High:      { color: '#ef4444', bg: 'rgba(239,68,68,.1)', border: 'rgba(239,68,68,.25)', icon: '🚨', label: 'High Severity' },
+  Moderate:  { color: '#f59e0b', bg: 'rgba(245,158,11,.1)', border: 'rgba(245,158,11,.25)', icon: '⚠️', label: 'Moderate Severity' },
+  Low:       { color: '#10b981', bg: 'rgba(16,185,129,.1)', border: 'rgba(16,185,129,.25)', icon: '✅', label: 'Low Severity' },
 }
 
 const SPECIALIST_ICONS = {
@@ -24,8 +25,12 @@ const SPECIALIST_ICONS = {
 const AnalysisResult = ({ result, onReset }) => {
   if (!result) return null
 
-  const sev = SEVERITY_CONFIG[result.severity] || SEVERITY_CONFIG.Low
+  const severityObject = typeof result.severity === 'object' && result.severity
+    ? result.severity
+    : { level: 1, label: result.severity || 'Low', baselineLevel: 1, redFlagsDetected: false, reasons: [] }
+  const sev = SEVERITY_CONFIG[severityObject.label] || SEVERITY_CONFIG.Low
   const specialistIcon = SPECIALIST_ICONS[result.recommendedSpecialist] || '👨‍⚕️'
+  const severityReason = severityObject.reasons?.[0] || 'Your reported symptoms may require prompt medical evaluation.'
 
   return (
     <div className="result-panel anim-up" role="region" aria-label="Analysis Results" aria-live="polite">
@@ -111,7 +116,7 @@ const AnalysisResult = ({ result, onReset }) => {
       {/* ── Urgency note ── */}
       {result.urgencyNote && (
         <div
-          className={`result-note ${result.emergencyFlag ? 'result-note--emergency' : ''}`}
+          className={`result-note ${result.emergencyFlag || severityObject.level >= 4 ? 'result-note--emergency' : ''}`}
           role="note"
           aria-label="Medical advice"
         >
@@ -120,7 +125,7 @@ const AnalysisResult = ({ result, onReset }) => {
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p>{result.urgencyNote}</p>
+          <p>{result.emergencyFlag || severityObject.level >= 4 ? 'Your reported symptoms include warning signs that may require immediate medical evaluation.' : severityReason}</p>
         </div>
       )}
 

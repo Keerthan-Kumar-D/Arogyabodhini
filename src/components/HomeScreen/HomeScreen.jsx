@@ -3,9 +3,9 @@ import './HomeScreen.css'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
 
-const HomeScreen = ({ apiError, onStartListening, onTextSubmit }) => {
+const HomeScreen = ({ apiError, initialText = '', onStartListening, onTextSubmit }) => {
   const { t, en, lang } = useLanguage()
-  const [text,    setText]    = useState('')
+  const [text,    setText]    = useState(initialText)
   const [loading, setLoading] = useState(false)
   const textRef = useRef(null)
 

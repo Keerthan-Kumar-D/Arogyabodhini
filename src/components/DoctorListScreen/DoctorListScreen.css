@@ -388,6 +388,10 @@
   .doc-card__avail      { order: 3; }
   .doc-card__info-row   { flex-wrap: wrap; }
   .doc-card__info-cell  { min-width: 45%; border-right: 1.5px solid #e0e0e0; }
-  .doc-action-btn       { font-size: 0.88rem; }
+  .doc-card__actions    { flex-wrap: wrap; }
+  .doc-action-btn       { font-size: 0.88rem; min-width: 0; }
+  .doc-action-btn--book { order: -1; flex: 1 1 100%; }
+  .doc-action-btn--profile,
+  .doc-action-btn--video { flex: 1 1 calc(50% - 5px); padding: 0 8px; }
   .doclist-topbar__info { display: none; }
 }

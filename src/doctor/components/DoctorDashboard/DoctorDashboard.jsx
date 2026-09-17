@@ -242,7 +242,13 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
 
                   {/* Symptoms */}
                   <div className="dash-consult-card__symptoms">
-                    <strong>Symptoms:</strong> {c.symptoms}
+                    <strong>Symptoms:</strong> {c.patientSymptoms || c.symptoms}
+                  </div>
+
+                  <div className="dash-consult-card__contact">
+                    <strong>Contact:</strong> {c.patientPhone || 'Not provided'}
+                    <span><strong>Type:</strong> {c.consultationType === 'video' ? 'Video Consultation' : 'In-person Visit'}</span>
+                    <span><strong>Request:</strong> {c.status}</span>
                   </div>
 
                   {/* AI analysis */}

@@ -3,8 +3,8 @@
  * Replace login() with a real API call in production.
  */
 
-import DOCTOR_ACCOUNTS from '../data/doctorAccounts'
 import { apiUrl } from '../../services/apiBase'
+import DOCTOR_ACCOUNTS from '../data/doctorAccounts'
 
 const SESSION_KEY = 'ab_doctor_session'
 
@@ -29,7 +29,7 @@ export const authService = {
     } catch {}
 
     const account = DOCTOR_ACCOUNTS.find(
-      a => a.email.toLowerCase() === email.toLowerCase() && a.password === password
+      candidate => candidate.email.toLowerCase() === email.toLowerCase() && candidate.password === password
     )
     if (!account) return { success: false, error: 'Invalid email or password.' }
     const session = { ...account, loginAt: new Date().toISOString() }
@@ -41,7 +41,14 @@ export const authService = {
   restoreSession() {
     try {
       const raw = localStorage.getItem(SESSION_KEY)
-      return raw ? JSON.parse(raw) : null
+      if (!raw) return null
+      const session = JSON.parse(raw)
+      if (session?.name === 'Dr. Priya Sharma' && session.id === 'doc-priya-sharma') {
+        const normalized = { ...session, id: 'doc-001' }
+        localStorage.setItem(SESSION_KEY, JSON.stringify(normalized))
+        return normalized
+      }
+      return session
     } catch { return null }
   },
 
