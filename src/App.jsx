@@ -10,6 +10,9 @@ import DoctorDetailScreen   from './components/DoctorDetailScreen/DoctorDetailSc
 import AppointmentScreen    from './components/AppointmentScreen/AppointmentScreen'
 import PatientVideoRoom     from './components/PatientVideoRoom/PatientVideoRoom'
 import AppHeader            from './components/AppHeader/AppHeader'
+import PatientAccount       from './components/PatientAccount/PatientAccount'
+import { usePatientAuth }   from './patient/context/PatientContext'
+import { PatientProvider } from './patient/context/PatientContext'
 import { analyzeSymptoms as analyzeAPI } from './services/api'
 import './styles/App.css'
 
@@ -48,6 +51,7 @@ function clearVideoSession() {
 /* Inner app — runs inside LanguageProvider so it can call useLanguage */
 function AppInner() {
   const { lang, setLang } = useLanguage()
+  const { patient } = usePatientAuth()
 
   // ALL hooks called unconditionally
   const [screen,          setScreen]          = useState(() => {
@@ -58,6 +62,7 @@ function AppInner() {
   const [result,          setResult]          = useState(null)
   const [apiError,        setApiError]        = useState(null)
   const [showLangPicker,  setShowLangPicker]  = useState(false)
+  const [showPatientAuth, setShowPatientAuth] = useState(false)
   const [selectedDoctor,  setSelectedDoctor]  = useState(null)
   const [appointmentMode, setAppointmentMode] = useState('book')
   const [retryText,       setRetryText]       = useState('')
@@ -162,6 +167,13 @@ function AppInner() {
   const handleVideoConsult = useCallback((doctor) => {
     setSelectedDoctor(doctor)
     setAppointmentMode('video')
+    if (patient) setScreen(SCREENS.APPOINTMENT)
+    else setShowPatientAuth(true)
+  }, [patient])
+
+  const handlePatientAuthenticated = useCallback(() => {
+    setShowPatientAuth(false)
+    setAppointmentMode('video')
     setScreen(SCREENS.APPOINTMENT)
   }, [])
 
@@ -181,6 +193,14 @@ function AppInner() {
       {showLangPicker && <LanguageSelectScreen onSelect={handleChangeLang} />}
 
       <AppHeader onChangeLang={() => setShowLangPicker(true)} />
+      {showPatientAuth && (
+        <PatientAccount
+          initialMode="login"
+          showVideoPrompt
+          onClose={() => setShowPatientAuth(false)}
+          onAuthenticated={handlePatientAuthenticated}
+        />
+      )}
 
       <main className="ab-main">
         {screen === SCREENS.HOME && (
@@ -260,8 +280,10 @@ function AppInner() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <AppInner />
-    </LanguageProvider>
+    <PatientProvider>
+      <LanguageProvider>
+        <AppInner />
+      </LanguageProvider>
+    </PatientProvider>
   )
 }

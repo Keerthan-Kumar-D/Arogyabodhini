@@ -14,17 +14,26 @@
  */
 
 import { apiUrl } from '../../services/apiBase'
+import patientService from '../../patient/services/patientService'
 
 const API = apiUrl('/api/consultations')
+const patientHeaders = () => {
+  const token = patientService.getToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+const doctorHeaders = () => {
+  const token = localStorage.getItem('ab_doctor_token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 export const consultationService = {
 
   /** Create a new consultation request (called from Patient AppointmentScreen) */
-  async createRequest({ doctorId, doctorName, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }) {
+  async createRequest({ doctorId, doctorName, doctorSpecialty, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }) {
     const res = await fetch(API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ doctorId, doctorName, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }),
+      headers: { 'Content-Type': 'application/json', ...patientHeaders() },
+      body: JSON.stringify({ doctorId, doctorName, doctorSpecialty, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }),
     })
     const data = await res.json()
     if (!data.success) throw new Error(data.message || 'Failed to create consultation request.')
@@ -33,14 +42,14 @@ export const consultationService = {
 
   /** Get all consultations for a doctor */
   async getByDoctor(doctorId) {
-    const res  = await fetch(`${API}?doctorId=${encodeURIComponent(doctorId)}`)
+  const res  = await fetch(`${API}?doctorId=${encodeURIComponent(doctorId)}`, { headers: doctorHeaders() })
     const data = await res.json()
     return data.success ? data.consultations : []
   },
 
   /** Get a single consultation */
   async getById(id) {
-    const res  = await fetch(`${API}/${encodeURIComponent(id)}`)
+  const res  = await fetch(`${API}/${encodeURIComponent(id)}`, { headers: doctorHeaders() })
     if (!res.ok) return null
     const data = await res.json()
     return data.success ? data.consultation : null
@@ -50,7 +59,7 @@ export const consultationService = {
   async accept(id) {
     const res = await fetch(`${API}/${encodeURIComponent(id)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
       body: JSON.stringify({ status: 'accepted' }),
     })
     const data = await res.json()
@@ -61,7 +70,7 @@ export const consultationService = {
   async reject(id) {
     const res = await fetch(`${API}/${encodeURIComponent(id)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
       body: JSON.stringify({ status: 'rejected' }),
     })
     const data = await res.json()
@@ -72,7 +81,7 @@ export const consultationService = {
   async saveNotes(id, notes) {
     const res = await fetch(`${API}/${encodeURIComponent(id)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
       body: JSON.stringify({ status: 'completed', notes }),
     })
     const data = await res.json()
@@ -83,7 +92,7 @@ export const consultationService = {
   async savePrescription(id, prescription) {
     const res = await fetch(`${API}/${encodeURIComponent(id)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
       body: JSON.stringify({ prescription }),
     })
     const data = await res.json()
@@ -94,7 +103,7 @@ export const consultationService = {
   async seedDemoData(doctorId) {
     await fetch(`${API}/seed`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
       body: JSON.stringify({ doctorId }),
     })
   },

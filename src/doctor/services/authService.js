@@ -7,6 +7,7 @@ import { apiUrl } from '../../services/apiBase'
 import DOCTOR_ACCOUNTS from '../data/doctorAccounts'
 
 const SESSION_KEY = 'ab_doctor_session'
+const TOKEN_KEY = 'ab_doctor_token'
 
 export const authService = {
   saveSession(doctor) {
@@ -24,6 +25,7 @@ export const authService = {
 
       if (response.ok && payload.success && payload.doctor) {
         try { localStorage.setItem(SESSION_KEY, JSON.stringify(payload.doctor)) } catch {}
+        if (payload.token) localStorage.setItem(TOKEN_KEY, payload.token)
         return { success: true, doctor: payload.doctor }
       }
     } catch {}
@@ -33,6 +35,7 @@ export const authService = {
     )
     if (!account) return { success: false, error: 'Invalid email or password.' }
     const session = { ...account, loginAt: new Date().toISOString() }
+    localStorage.removeItem(TOKEN_KEY)
     try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)) } catch {}
     return { success: true, doctor: session }
   },
@@ -54,7 +57,9 @@ export const authService = {
 
   /** Logout */
   logout() {
-    try { localStorage.removeItem(SESSION_KEY) } catch {}
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (token) fetch(apiUrl('/api/doctor-auth/logout'), { method: 'POST', headers: { Authorization: `Bearer ${token}` } }).catch(() => {})
+    try { localStorage.removeItem(SESSION_KEY); localStorage.removeItem(TOKEN_KEY) } catch {}
   },
 
   /** Check if a session is active */

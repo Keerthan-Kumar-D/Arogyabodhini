@@ -82,6 +82,20 @@
   background: rgba(255,255,255,0.28);
 }
 
+.ab-header__patient-btn {
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 8px;
+  padding: 7px 11px;
+  background: #fff;
+  color: #0d47a1;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ab-header__patient-btn:hover { background: #e3f2fd; }
+
 .ab-header__lang-code {
   max-width: 60px;
   overflow: hidden;
@@ -92,4 +106,5 @@
 @media (max-width: 500px) {
   .ab-header__badge { display: none; }
   .ab-header__name  { font-size: 1.05rem; }
+  .ab-header__patient-btn { padding: 7px 8px; font-size: 0.72rem; }
 }

@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useLanguage } from '../../i18n/LanguageContext'
 import BilingualText from '../BilingualText/BilingualText'
+import PatientAccount from '../PatientAccount/PatientAccount'
+import { usePatientAuth } from '../../patient/context/PatientContext'
 import './AppHeader.css'
 
 const AppHeader = ({ onChangeLang }) => {
   const { t, en, lang } = useLanguage()
+  const { patient } = usePatientAuth()
+  const [showAccount, setShowAccount] = useState(false)
 
   return (
     <header className="ab-header" role="banner">
@@ -36,6 +40,10 @@ const AppHeader = ({ onChangeLang }) => {
             {en('freeSecure')}
           </div>
 
+          <button id="patient-login-btn" className="ab-header__patient-btn" onClick={() => setShowAccount(true)}>
+            {patient ? `👤 Hi, ${patient.name.split(/\s+/)[0]}` : 'Patient Login'}
+          </button>
+
           <button
             id="change-lang-btn"
             className="ab-header__lang-btn"
@@ -54,6 +62,7 @@ const AppHeader = ({ onChangeLang }) => {
           </button>
         </div>
       </div>
+      {showAccount && <PatientAccount onClose={() => setShowAccount(false)} />}
     </header>
   )
 }
