@@ -23,13 +23,21 @@ const seededDoctors = DOCTORS.map((doctor) => ({
   specialty: normalizeDoctorSpecialty(doctor.specialty),
 }))
 
+const seededDoctorById = new Map(seededDoctors.map((doctor) => [doctor.id, doctor]))
+
+const getSeededDoctorEmail = (doctor) => {
+  const seededDoctor = seededDoctorById.get(doctor.id)
+  if (!seededDoctor) return null
+  return `${slugify(seededDoctor.name.replace(/^Dr\.\s*/i, '')).replace(/-/g, '.')}@arogyabodhini.com`
+}
+
 const provisionDoctorAccess = async () => {
   const defaultPassword = process.env.DOCTOR_DEFAULT_PASSWORD
   const defaultPasswordHash = defaultPassword ? hashPassword(defaultPassword) : null
-  const doctors = await Doctor.find({}).select('_id name entry_id email passwordHash availability availabilityStatus').lean()
+  const doctors = await Doctor.find({}).select('_id id name entry_id email passwordHash availability availabilityStatus').lean()
 
   const operations = doctors.map((doctor) => {
-    const email = doctor.email || `doctor-${slugify(doctor.name)}-${doctor.entry_id || doctor._id}@arogyabodhini.com`
+    const email = getSeededDoctorEmail(doctor) || doctor.email || `doctor-${slugify(doctor.name)}-${doctor.entry_id || doctor._id}@arogyabodhini.com`
     const set = {
       email,
       availability: doctor.availability || 'Not Available',
