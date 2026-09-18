@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import './PatientVideoRoom.css'
 import VideoCallRoom from '../../doctor/components/VideoCallRoom/VideoCallRoom'
 import consultationService from '../../doctor/services/consultationService'
+import patientService from '../../patient/services/patientService'
 
 /**
  * PatientVideoRoom
@@ -22,13 +23,29 @@ const PatientVideoRoom = ({ consultationId, patientName, onBack, onHome }) => {
   const [checking,  setChecking]  = useState(true)
   const [callEnded, setCallEnded] = useState(false)
   const [fetchError,setFetchError]= useState('')
+  const [authFailed, setAuthFailed] = useState(false)
   const mountedRef = useRef(true)
+
+  const handleFetchError = useCallback((error) => {
+    if (error.status === 401) {
+      patientService.clearSession()
+      setAuthFailed(true)
+      setFetchError('Your patient session has expired. Please log in again to continue.')
+      return
+    }
+    if (error.status === 403) {
+      setAuthFailed(true)
+      setFetchError('You are not authorized to access this consultation.')
+      return
+    }
+    setFetchError(error.message || 'Unable to reach the server. Make sure the backend is running.')
+  }, [])
 
   // Initial fetch
   useEffect(() => {
     mountedRef.current = true
     let cancelled = false
-    consultationService.getById(consultationId).then(c => {
+    consultationService.getById(consultationId, 'patient').then(c => {
       if (!cancelled && mountedRef.current) {
         if (c) {
           setConsult(c)
@@ -38,30 +55,33 @@ const PatientVideoRoom = ({ consultationId, patientName, onBack, onHome }) => {
         }
         setChecking(false)
       }
-    }).catch(() => {
+    }).catch(error => {
       if (!cancelled && mountedRef.current) {
-        setFetchError('Unable to reach the server. Make sure the backend is running.')
+        handleFetchError(error)
         setChecking(false)
       }
     })
     return () => { cancelled = true }
-  }, [consultationId])
+  }, [consultationId, handleFetchError])
 
   // Poll for doctor acceptance every 3 seconds (async)
   useEffect(() => {
+    if (authFailed) return undefined
     const id = setInterval(async () => {
       try {
-        const c = await consultationService.getById(consultationId)
+        const c = await consultationService.getById(consultationId, 'patient')
         if (mountedRef.current && c) {
           setConsult(c)
           setFetchError('')
         }
-      } catch {
-        /* backend unavailable — keep last known consult, keep polling */
+      } catch (error) {
+        if (mountedRef.current && (error.status === 401 || error.status === 403)) {
+          handleFetchError(error)
+        }
       }
     }, 3000)
     return () => clearInterval(id)
-  }, [consultationId])
+  }, [authFailed, consultationId, handleFetchError])
 
   useEffect(() => {
     return () => { mountedRef.current = false }
@@ -76,14 +96,14 @@ const PatientVideoRoom = ({ consultationId, patientName, onBack, onHome }) => {
     setChecking(true)
     setFetchError('')
     try {
-      const c = await consultationService.getById(consultationId)
+      const c = await consultationService.getById(consultationId, 'patient')
       if (c) {
         setConsult(c)
       } else {
         setFetchError('Consultation not found. Please go back and try again.')
       }
-    } catch {
-      setFetchError('Unable to reach the server. Make sure the backend is running.')
+    } catch (error) {
+      handleFetchError(error)
     } finally {
       setChecking(false)
     }

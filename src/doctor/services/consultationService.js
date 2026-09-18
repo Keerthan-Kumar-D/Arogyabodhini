@@ -25,16 +25,31 @@ const doctorHeaders = () => {
   const token = localStorage.getItem('ab_doctor_token')
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
+const consultationHeaders = (viewer) => viewer === 'patient' ? patientHeaders() : doctorHeaders()
+
+const responseError = async (res, fallbackMessage) => {
+  let data = {}
+  try { data = await res.json() } catch {}
+  const error = new Error(data.message || fallbackMessage)
+  error.status = res.status
+  return error
+}
 
 export const consultationService = {
 
   /** Create a new consultation request (called from Patient AppointmentScreen) */
   async createRequest({ doctorId, doctorName, doctorSpecialty, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }) {
+    if (!patientService.getToken()) {
+      const error = new Error('Please log in to request a video consultation.')
+      error.status = 401
+      throw error
+    }
     const res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...patientHeaders() },
       body: JSON.stringify({ doctorId, doctorName, doctorSpecialty, patientName, patientAge, patientGender, patientLang, patientPhone, patientContact, patientSymptoms, symptoms, aiResult, slot, consultationType }),
     })
+    if (!res.ok) throw await responseError(res, 'Failed to create consultation request.')
     const data = await res.json()
     if (!data.success) throw new Error(data.message || 'Failed to create consultation request.')
     return data.consultation
@@ -42,15 +57,28 @@ export const consultationService = {
 
   /** Get all consultations for a doctor */
   async getByDoctor(doctorId) {
-  const res  = await fetch(`${API}?doctorId=${encodeURIComponent(doctorId)}`, { headers: doctorHeaders() })
+    const headers = doctorHeaders()
+    if (!headers.Authorization) {
+      const error = new Error('Doctor authentication is required.')
+      error.status = 401
+      throw error
+    }
+    const res = await fetch(`${API}?doctorId=${encodeURIComponent(doctorId)}`, { headers })
+    if (!res.ok) throw await responseError(res, 'Unable to load consultation requests.')
     const data = await res.json()
     return data.success ? data.consultations : []
   },
 
   /** Get a single consultation */
-  async getById(id) {
-  const res  = await fetch(`${API}/${encodeURIComponent(id)}`, { headers: doctorHeaders() })
-    if (!res.ok) return null
+  async getById(id, viewer = 'doctor') {
+    const headers = consultationHeaders(viewer)
+    if (viewer === 'patient' && !headers.Authorization) {
+      const error = new Error('Patient authentication is required.')
+      error.status = 401
+      throw error
+    }
+    const res = await fetch(`${API}/${encodeURIComponent(id)}`, { headers })
+    if (!res.ok) throw await responseError(res, 'Unable to load consultation.')
     const data = await res.json()
     return data.success ? data.consultation : null
   },

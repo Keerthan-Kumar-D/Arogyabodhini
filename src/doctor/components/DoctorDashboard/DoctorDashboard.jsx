@@ -19,19 +19,30 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
   const [tab,           setTab]           = useState('waiting')
   const [consultations, setConsultations] = useState([])
   const [statusSaving,   setStatusSaving] = useState(false)
+  const [pollingError,  setPollingError]  = useState('')
 
   const refresh = useCallback(async () => {
     if (!doctor) return
-    const all = await consultationService.getByDoctor(doctor.id)
-    // Backend already sorts newest-first, but ensure it here too
-    all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    setConsultations(all)
-  }, [doctor])
+    try {
+      const all = await consultationService.getByDoctor(doctor.id)
+      all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      setConsultations(all)
+      setPollingError('')
+    } catch (error) {
+      console.error('[doctor/consultations] Poll failed:', error)
+      if (error.status === 401) {
+        setPollingError('Your doctor session has expired. Please sign in again.')
+        logout()
+      } else {
+        setPollingError(error.message || 'Unable to load consultation requests.')
+      }
+    }
+  }, [doctor, logout])
 
   useEffect(() => {
     if (!doctor) return
     // Seed demo data ONCE on mount — only if zero consultations exist
-    consultationService.seedDemoData(doctor.id).then(() => refresh())
+    consultationService.seedDemoData(doctor.id).then(refresh)
     // Poll every 3 seconds to pick up new patient requests quickly
     const id = setInterval(refresh, 3000)
     return () => clearInterval(id)
@@ -176,6 +187,7 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
             </button>
           )}
         </div>
+        {pollingError && <p className="dash-empty" role="alert">{pollingError}</p>}
 
         {/* Profile tab */}
         {tab === 'profile' && fullDoc && (

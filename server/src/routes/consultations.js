@@ -1,7 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const Consultation = require('../models/Consultation')
-const { loadPatient, optionalPatient } = require('../middleware/patientAuth')
+const Doctor = require('../models/Doctor')
+const { getCanonicalDoctorId } = require('../config/doctorIdentity')
+const { loadPatient, requirePatient } = require('../middleware/patientAuth')
 const { loadDoctor, requireDoctor } = require('../middleware/doctorAuth')
 
 const requireConsultationViewer = async (req, res, next) => {
@@ -33,7 +35,7 @@ function uuid() {
   return `cons-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
-router.post('/consultations', optionalPatient, async (req, res, next) => {
+router.post('/consultations', requirePatient, async (req, res, next) => {
   try {
     const {
       doctorId, doctorName, doctorSpecialty, patientName, patientAge, patientGender,
@@ -43,9 +45,15 @@ router.post('/consultations', optionalPatient, async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'doctorId and patientName are required.' })
     }
 
+    const doctor = await Doctor.findOne({ id: doctorId }).lean()
+    const canonicalDoctorId = doctor && (getCanonicalDoctorId(doctor) || doctor.id)
+    if (!canonicalDoctorId || canonicalDoctorId !== doctorId) {
+      return res.status(400).json({ success: false, message: 'A valid canonical doctorId is required.' })
+    }
+
     const id = uuid()
     const consultation = await Consultation.create({
-      id, requestId: id, roomId: `consultation_${id}`, status: 'waiting', doctorId,
+      id, requestId: id, roomId: `consultation_${id}`, status: 'waiting', doctorId: canonicalDoctorId,
       doctorName: doctorName || '', doctorSpecialty: doctorSpecialty || '', patientId: req.patient?.patientId || null, patientName,
       patientAge: patientAge || '', patientGender: patientGender || '', patientLang: patientLang || 'English',
       patientPhone: patientPhone || '', patientContact: patientContact || patientPhone || '',
