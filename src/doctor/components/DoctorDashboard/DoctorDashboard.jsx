@@ -41,10 +41,9 @@ const DoctorDashboard = ({ onOpenConsultation }) => {
 
   useEffect(() => {
     if (!doctor) return
-    // Seed demo data ONCE on mount — only if zero consultations exist
-    consultationService.seedDemoData(doctor.id).then(refresh)
     // Poll every 3 seconds to pick up new patient requests quickly
     const id = setInterval(refresh, 3000)
+    refresh()
     return () => clearInterval(id)
   }, [refresh, doctor])
 

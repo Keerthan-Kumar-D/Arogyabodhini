@@ -127,15 +127,6 @@ export const consultationService = {
     return data.success ? data.consultation : null
   },
 
-  /** Seed demo data (calls backend seed endpoint) */
-  async seedDemoData(doctorId) {
-    await fetch(`${API}/seed`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...doctorHeaders() },
-      body: JSON.stringify({ doctorId }),
-    })
-  },
-
   /** Clear all (for testing) */
   async clear() {
     await fetch(API, { method: 'DELETE' })
