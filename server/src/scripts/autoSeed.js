@@ -11,6 +11,7 @@ const Doctor = require('../models/Doctor')
 const { hashPassword } = require('../services/doctorAuth')
 const { DOCTORS } = require('../data/doctorsData')
 const { normalizeDoctorSpecialty } = require('../config/diseaseSpecialtyMap')
+const { getCanonicalDoctorId } = require('../config/doctorIdentity')
 
 const slugify = (value) => String(value || '')
   .toLowerCase()
@@ -55,7 +56,7 @@ const autoSeed = async () => {
     await Doctor.bulkWrite(
       seededDoctors.map((doctor) => ({
         updateOne: {
-          filter: { id: doctor.id },
+          filter: { $or: [{ id: doctor.id }, { name: doctor.name }] },
           update: { $set: doctor },
           upsert: true,
         },
@@ -75,6 +76,15 @@ const autoSeed = async () => {
     }
 
     const doctorAccessCount = await provisionDoctorAccess()
+
+      await Doctor.bulkWrite(
+        (await Doctor.find({}).select('_id id name').lean()).map((doctor) => {
+          const id = getCanonicalDoctorId(doctor)
+          return id
+            ? { updateOne: { filter: { _id: doctor._id }, update: { $set: { id } } } }
+            : null
+        }).filter(Boolean)
+      )
 
     console.log(`[seed] Verified ${seededDoctors.length} seed doctors and access for ${doctorAccessCount} database doctors`)
   } catch (err) {

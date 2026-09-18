@@ -7,6 +7,8 @@ const consultationsRouter  = require('./routes/consultations')
 const doctorsRouter        = require('./routes/doctors')
 const doctorAuthRouter     = require('./routes/doctorAuth')
 const doctorStatusRouter   = require('./routes/doctorStatus')
+const patientAuthRouter    = require('./routes/patientAuth')
+const patientRouter        = require('./routes/patient')
 
 const app = express()
 
@@ -63,6 +65,8 @@ app.use('/api', consultationsRouter)
 app.use('/api', doctorsRouter)
 app.use('/api', doctorAuthRouter)
 app.use('/api', doctorStatusRouter)
+app.use('/api/patient-auth', patientAuthRouter)
+app.use('/api', patientRouter)
 
 // ─── 404 HANDLER ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

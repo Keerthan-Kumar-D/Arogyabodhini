@@ -1,5 +1,7 @@
 const Doctor = require('../models/Doctor')
 const { verifyPassword } = require('../services/doctorAuth')
+const { getCanonicalDoctorId } = require('../config/doctorIdentity')
+const { hashToken } = require('../middleware/doctorAuth')
 
 const slugify = (value) => String(value || '')
   .toLowerCase()
@@ -7,7 +9,7 @@ const slugify = (value) => String(value || '')
   .replace(/^-|-$/g, '')
 
 const toDoctorProfile = (doctor) => ({
-  id: doctor.id || doctor._id.toString(),
+  id: getCanonicalDoctorId(doctor) || doctor.id || doctor._id.toString(),
   name: doctor.name || 'Doctor',
   spec: doctor.specialty || doctor.spec || 'General Physician',
   regNo: doctor.entry_id ? `DB-${doctor.entry_id}` : `DB-${doctor._id.toString().slice(-8)}`,
@@ -49,8 +51,17 @@ const loginDoctor = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' })
     }
 
+    const token = require('crypto').randomBytes(32).toString('hex')
+    await Doctor.updateOne({ _id: doctor._id }, {
+      $set: {
+        sessionTokenHash: hashToken(token),
+        sessionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    })
+
     return res.json({
       success: true,
+      token,
       doctor: {
         ...toDoctorProfile(doctor),
         email: doctor.email,
